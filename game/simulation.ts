@@ -92,6 +92,7 @@ export class Battle {
     this.buildings = [];
     this.effects = [];
     this.phase = 'ready';
+    this.planningReasons.clear();
     this.gold = 240;
     this.wood = 180;
     this.mana = 100;
@@ -182,6 +183,14 @@ export class Battle {
   get selected() {
     return this.units.filter((u) => u.selected && u.hp > 0);
   }
+  private planningReasons = new Set<string>();
+  setPlanning(reason: 'camp' | 'help' | 'target', open: boolean) {
+    if (open) this.planningReasons.add(reason);
+    else this.planningReasons.delete(reason);
+  }
+  get planning() {
+    return this.planningReasons.size > 0;
+  }
   start() {
     if (this.phase === 'ready') {
       this.phase = 'playing';
@@ -268,34 +277,40 @@ export class Battle {
     }
     this.notice = work === 'gold' ? '工人已前往金矿。' : '工人已前往霜松林。';
   }
-  build(p: Point) {
-    if (
-      this.phase !== 'playing' ||
-      !Number.isFinite(p.x) ||
-      !Number.isFinite(p.z)
-    )
-      return false;
-    if (this.gold < 100 || this.wood < 90) {
-      this.notice = '箭塔需要 100 金币和 90 木材';
-      return false;
-    }
-    if (
-      p.z < 1 ||
-      Math.abs(p.x) > 26 ||
-      p.z > 23 ||
-      this.buildings.some(
-        (b) => b.hp > 0 && distance(b, p) < (b.kind === 'keep' ? 7 : 4),
+  targetError(kind: 'tower' | 'blizzard', p: Point): string | null {
+    if (!Number.isFinite(p.x) || !Number.isFinite(p.z))
+      return '请选择战场内的位置';
+    if (kind === 'tower') {
+      if (this.gold < 100 || this.wood < 90) return '需要 100 金币和 90 木材';
+      if (
+        p.z < 1 ||
+        Math.abs(p.x) > 26 ||
+        p.z > 23 ||
+        this.buildings.some(
+          (b) => b.hp > 0 && distance(b, p) < (b.kind === 'keep' ? 7 : 4),
+        )
       )
-    ) {
-      this.notice = '请选择冰河南岸的空地。';
-      return false;
+        return '请选择冰河南岸的空地';
+      if (
+        this.buildings.filter(
+          (b) => b.team === 'ally' && b.kind === 'tower' && b.hp > 0,
+        ).length >= 5
+      )
+        return '最多建造 5 座箭塔';
+    } else {
+      if (!this.hero) return '英雄已阵亡';
+      if (this.blizzardCooldown > 0) return '暴风雪正在冷却';
+      if (this.mana < 55) return '需要 55 法力';
+      if (Math.abs(p.x) > 30 || Math.abs(p.z) > 25) return '请选择战场内的位置';
+      if (distance(this.hero, p) > 26) return '距离过远，请靠近英雄';
     }
-    if (
-      this.buildings.filter(
-        (b) => b.team === 'ally' && b.kind === 'tower' && b.hp > 0,
-      ).length >= 5
-    ) {
-      this.notice = '最多建造 5 座箭塔';
+    return null;
+  }
+  build(p: Point) {
+    if (this.phase !== 'playing') return false;
+    const error = this.targetError('tower', p);
+    if (error) {
+      this.notice = error;
       return false;
     }
     this.gold -= 100;
@@ -329,22 +344,10 @@ export class Battle {
     return true;
   }
   blizzard(p: Point) {
-    const h = this.hero;
-    if (
-      this.phase !== 'playing' ||
-      !h ||
-      this.blizzardCooldown > 0 ||
-      this.mana < 55 ||
-      !Number.isFinite(p.x) ||
-      !Number.isFinite(p.z)
-    )
-      return false;
-    if (Math.abs(p.x) > 30 || Math.abs(p.z) > 25) {
-      this.notice = '请选择战场内的位置';
-      return false;
-    }
-    if (distance(h, p) > 26) {
-      this.notice = '目标太远 · 靠近英雄 26 米以内';
+    if (this.phase !== 'playing') return false;
+    const error = this.targetError('blizzard', p);
+    if (error) {
+      this.notice = error;
       return false;
     }
     this.mana -= 55;
@@ -391,7 +394,7 @@ export class Battle {
     return d < 0.3;
   }
   step(dt: number) {
-    if (this.phase !== 'playing') return;
+    if (this.phase !== 'playing' || this.planning) return;
     dt = Math.min(Math.max(dt, 0), 0.1);
     if (!Number.isFinite(dt)) return;
     this.time += dt;
@@ -605,6 +608,7 @@ export class Battle {
         team,
         hp,
       })),
+      planning: this.planning,
       phase: this.phase,
       gold: Math.floor(this.gold),
       wood: Math.floor(this.wood),

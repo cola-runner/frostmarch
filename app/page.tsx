@@ -27,10 +27,18 @@ import {
   Crown,
   Tent,
   CircleHelp,
+  Check,
+  Map,
 } from 'lucide-react';
 import Image from 'next/image';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
 import {
   Battle,
   COSTS,
@@ -54,7 +62,8 @@ export default function Home() {
     battleRef = useRef<Battle | null>(null),
     sceneRef = useRef<SceneController | null>(null),
     audioRef = useRef<BattleAudio | null>(null),
-    modeRef = useRef<Mode>('order');
+    modeRef = useRef<Mode>('order'),
+    aimRef = useRef<Point | null>(null);
   const [state, setState] = useState<Snapshot>(initial),
     [ready, setReady] = useState(false),
     [error, setError] = useState(''),
@@ -62,14 +71,56 @@ export default function Home() {
     [camp, setCamp] = useState(false),
     [help, setHelp] = useState(false),
     [sound, setSound] = useState(true),
-    [group, setGroup] = useState('army');
+    [group, setGroup] = useState('army'),
+    [aim, setAim] = useState<{ point: Point; error: string | null } | null>(
+      null,
+    ),
+    [mapOpen, setMapOpen] = useState(false);
   const refresh = useCallback(() => {
-    if (battleRef.current) setState(battleRef.current.snapshot());
+    if (battleRef.current) {
+      setState(battleRef.current.snapshot());
+      if (aimRef.current && modeRef.current !== 'order')
+        setAim({
+          point: aimRef.current,
+          error: battleRef.current.targetError(modeRef.current, aimRef.current),
+        });
+    }
   }, []);
   const chooseMode = useCallback((next: Mode) => {
     modeRef.current = next;
+    battleRef.current?.setPlanning('target', next !== 'order');
+    aimRef.current = null;
+    setAim(null);
+    sceneRef.current?.setTarget(next === 'order' ? null : next);
     setMode(next);
   }, []);
+  const openCamp = useCallback(
+    (open: boolean) => {
+      setCamp(open);
+      battleRef.current?.setPlanning('camp', open);
+      refresh();
+    },
+    [refresh],
+  );
+  const openHelp = useCallback(
+    (open: boolean) => {
+      setHelp(open);
+      battleRef.current?.setPlanning('help', open);
+      refresh();
+    },
+    [refresh],
+  );
+  const confirmTarget = useCallback(() => {
+    const b = battleRef.current,
+      p = aimRef.current;
+    if (!b || !p || modeRef.current === 'order') return;
+    const ok = modeRef.current === 'tower' ? b.build(p) : b.blizzard(p);
+    if (ok) {
+      audioRef.current?.cue(modeRef.current === 'tower' ? 'recruit' : 'magic');
+      chooseMode('order');
+    }
+    refresh();
+  }, [chooseMode, refresh]);
   useEffect(() => {
     const battle = new Battle();
     battleRef.current = battle;
@@ -86,16 +137,13 @@ export default function Home() {
             battle,
             (p: Point, unit?: Unit) => {
               if (battle.phase !== 'playing') return;
-              if (modeRef.current === 'tower') {
-                if (battle.build(p)) {
-                  chooseMode('order');
-                  audio.cue('recruit');
-                }
-              } else if (modeRef.current === 'blizzard') {
-                if (battle.blizzard(p)) {
-                  chooseMode('order');
-                  audio.cue('magic');
-                }
+              if (modeRef.current !== 'order') {
+                aimRef.current = p;
+                setAim({
+                  point: p,
+                  error: battle.targetError(modeRef.current, p),
+                });
+                sceneRef.current?.setTarget(modeRef.current, p);
               } else if (unit) {
                 battle.select(unit.id);
                 setGroup(
@@ -138,13 +186,13 @@ export default function Home() {
       b.reset();
       chooseMode('order');
       setGroup('army');
-      setCamp(false);
+      openCamp(false);
     }
     b.start();
     sceneRef.current?.focus({ x: -3, z: 5 });
     void audioRef.current?.unlock().then(() => audioRef.current?.cue('start'));
     refresh();
-  }, [ready, chooseMode, refresh]);
+  }, [ready, chooseMode, refresh, openCamp]);
   const select = useCallback(
     (g: 'army' | 'hero' | 'workers') => {
       battleRef.current?.select(g);
@@ -178,6 +226,7 @@ export default function Home() {
         return;
       const b = battleRef.current;
       if (!b) return;
+      if (help || camp) return;
       if (e.code === 'Space') {
         e.preventDefault();
         b.pause();
@@ -191,13 +240,23 @@ export default function Home() {
       if (e.key.toLowerCase() === 'r') recruit('guard');
       if (e.key === 'Escape') {
         chooseMode('order');
-        setCamp(false);
-        setHelp(false);
+        openCamp(false);
+        openHelp(false);
       }
     }
     window.addEventListener('keydown', keys);
     return () => window.removeEventListener('keydown', keys);
-  }, [select, nova, recruit, chooseMode, refresh]);
+  }, [
+    select,
+    nova,
+    recruit,
+    chooseMode,
+    refresh,
+    help,
+    camp,
+    openCamp,
+    openHelp,
+  ]);
   const fullscreen = async () => {
     try {
       if (document.fullscreenElement) await document.exitFullscreen();
@@ -224,13 +283,13 @@ export default function Home() {
     ended = state.phase === 'won' || state.phase === 'lost';
   return (
     <main
-      className={`game-shell ${state.phase === 'ready' ? 'is-prologue' : ''} ${mode !== 'order' ? 'is-targeting' : ''}`}
+      className={`game-shell ${state.phase === 'ready' ? 'is-prologue' : ''} ${mode !== 'order' ? 'is-targeting' : ''} ${aim ? 'has-staged-target' : ''} ${mapOpen ? 'map-open' : ''}`}
     >
       <div
         className="battlefield"
         ref={mount}
         role="application"
-        aria-label="3D 战场。点选友军，点击地面移动，拖动平移，双指缩放。"
+        aria-label="3D 战场。点选友军，点击地面移动；拖动平移，双指缩放。技能需点选位置后确认。"
       />
       <div className="vignette" />
       <header className="topbar">
@@ -258,6 +317,13 @@ export default function Home() {
           </span>
         </div>
         <div className="top-actions">
+          <button
+            className="icon-button help-toggle"
+            onClick={() => openHelp(true)}
+            aria-label="操作指南"
+          >
+            <CircleHelp />
+          </button>
           <button
             className="icon-button"
             onClick={toggleSound}
@@ -360,13 +426,22 @@ export default function Home() {
             <span>→</span>
           </button>
           <small>单人战役 · 触控指挥 · 约 3 分钟</small>
-          <button className="how-to" onClick={() => setHelp(true)}>
+          <button className="how-to" onClick={() => openHelp(true)}>
             <CircleHelp size={14} /> 如何指挥
           </button>
         </section>
       )}
       {state.phase !== 'ready' && (
         <>
+          <button
+            className="map-toggle"
+            onClick={() => setMapOpen(!mapOpen)}
+            aria-expanded={mapOpen}
+            aria-label={mapOpen ? '收起战场地图' : '展开战场地图'}
+          >
+            <Map />
+            <span>{mapOpen ? '收起地图' : '战场地图'}</span>
+          </button>
           <div className="minimap-wrap">
             <div className="minimap-head">
               <Compass size={13} />
@@ -466,9 +541,9 @@ export default function Home() {
           </div>
           <output className={`hint ${mode !== 'order' ? 'target-hint' : ''}`}>
             {mode === 'tower'
-              ? '在冰河南岸点选箭塔位置'
+              ? '战术暂停 · 点击南岸空地预览位置'
               : mode === 'blizzard'
-                ? '点选暴风雪的释放位置'
+                ? '战术暂停 · 点击战场预览技能范围'
                 : state.notice}
             {mode !== 'order' && (
               <button
@@ -481,7 +556,7 @@ export default function Home() {
           </output>
           <button
             className={`camp-toggle ${camp ? 'selected' : ''}`}
-            onClick={() => setCamp(!camp)}
+            onClick={() => openCamp(!camp)}
             aria-expanded={camp}
           >
             <Tent />
@@ -490,15 +565,62 @@ export default function Home() {
           </button>
         </>
       )}
-      {camp && (
-        <aside className="camp-panel" aria-label="营地与招募">
-          <div className="panel-title">
-            <span>
-              <Tent /> 北境营地
-            </span>
-            <button onClick={() => setCamp(false)} aria-label="关闭营地">
+      {aim && mode !== 'order' && (
+        <section className="target-confirm" aria-label="确认技能或建筑落点">
+          <p>
+            {aim.error ??
+              (mode === 'tower' ? '位置可建造' : '范围内的敌人将受到持续伤害')}
+          </p>
+          <div>
+            <button
+              className="confirm-placement"
+              disabled={!!aim.error || !active}
+              onClick={confirmTarget}
+            >
+              <Check />
+              {mode === 'tower' ? '确认建造' : '释放暴风雪'}
+            </button>
+            <button
+              className="cancel-placement"
+              onClick={() => chooseMode('order')}
+              aria-label="取消落点"
+            >
               <X />
             </button>
+          </div>
+        </section>
+      )}
+      <Sheet open={camp} onOpenChange={openCamp}>
+        <SheetContent
+          side="bottom"
+          className="camp-panel"
+          showCloseButton={false}
+        >
+          <div className="panel-title">
+            <span>
+              <Tent /> <SheetTitle>北境营地</SheetTitle>
+            </span>
+            <button onClick={() => openCamp(false)} aria-label="关闭营地">
+              <X />
+            </button>
+          </div>
+          <SheetDescription className="planning-note">
+            <Pause />
+            战术暂停 · 关闭营地后继续战斗
+          </SheetDescription>
+          <div className="camp-wallet">
+            <span>
+              <Coins />
+              {state.gold}
+            </span>
+            <span>
+              <TreePine />
+              {state.wood}
+            </span>
+            <span>
+              <Users />
+              {state.population}/30
+            </span>
           </div>
           <span className="section-label">招募军队</span>
           {(
@@ -596,7 +718,7 @@ export default function Home() {
             disabled={!active || state.gold < 100 || state.wood < 90}
             onClick={() => {
               chooseMode('tower');
-              setCamp(false);
+              openCamp(false);
             }}
           >
             <Hammer />
@@ -605,8 +727,8 @@ export default function Home() {
             </span>
             <Plus />
           </button>
-        </aside>
-      )}
+        </SheetContent>
+      </Sheet>
       <footer className="command-bar">
         <button
           className="hero-emblem"
@@ -702,7 +824,7 @@ export default function Home() {
           <i>70</i>
         </button>
       </footer>
-      <span className="version">FROSTMARCH / PLAYABLE DEMO 0.1</span>
+      <span className="version">FROSTMARCH / TOUCH EDITION 0.2</span>
       {state.phase === 'paused' && (
         <div className="overlay">
           <section className="result-panel">
@@ -720,7 +842,7 @@ export default function Home() {
               <Play />
               继续远征
             </button>
-            <button className="text-button" onClick={() => setHelp(true)}>
+            <button className="text-button" onClick={() => openHelp(true)}>
               查看操作指南
             </button>
           </section>
@@ -761,11 +883,11 @@ export default function Home() {
           </section>
         </div>
       )}
-      <Dialog open={help} onOpenChange={setHelp}>
+      <Dialog open={help} onOpenChange={openHelp}>
         <DialogContent className="help-panel" showCloseButton={false}>
           <button
             className="close-help icon-button"
-            onClick={() => setHelp(false)}
+            onClick={() => openHelp(false)}
             aria-label="关闭操作指南"
           >
             <X />
@@ -780,13 +902,13 @@ export default function Home() {
             <li>
               <b>经营营地，补充兵力</b>
               <p>
-                工人自动往返采集。打开营地可切换金币、木材，招募射手、卫兵并建造箭塔。
+                工人自动往返采集。打开营地时战斗暂停，可安心招募、切换采集资源或选择建造箭塔。
               </p>
             </li>
             <li>
               <b>让寒冬为你而战</b>
               <p>
-                靠近敌军释放凛冬之环；选择暴风雪后点选目标区域。保护英雄，摧毁北岸要塞。
+                靠近敌军释放凛冬之环；选择暴风雪后点选目标区域，确认再释放。保护英雄，摧毁北岸要塞。
               </p>
             </li>
           </ol>
@@ -796,7 +918,7 @@ export default function Home() {
             <span>空格 · 暂停</span>
             <span>Q / W · 英雄技能</span>
           </div>
-          <button className="begin" onClick={() => setHelp(false)}>
+          <button className="begin" onClick={() => openHelp(false)}>
             准备就绪
             <ChevronRight />
           </button>

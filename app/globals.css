@@ -1842,3 +1842,1195 @@ p {
   background: #091b29bd;
   backdrop-filter: blur(9px);
 }
+/* Touch edition: measured touch areas, safe areas and deliberate command placement. */
+.game-shell {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  height: 100dvh;
+}
+.battlefield canvas {
+  outline: none;
+}
+button:active:not(:disabled) {
+  filter: brightness(1.15);
+}
+.help-toggle {
+  display: grid;
+}
+.map-toggle {
+  display: none;
+}
+.target-confirm {
+  position: absolute;
+  bottom: 201px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8;
+  width: 360px;
+  padding: 12px;
+  background: #172f3bf5;
+  border: 1px solid #d1b887;
+  color: #e2d8bd;
+  box-shadow: 0 10px 30px #09182470;
+}
+.target-confirm p {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+.target-confirm > div {
+  display: flex;
+  gap: 8px;
+}
+.target-confirm button {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #ceb17a;
+  background: #d9c294;
+  color: #172c36;
+  font-size: 14px;
+  padding: 8px 14px;
+}
+.confirm-placement {
+  flex: 1;
+}
+.target-confirm .cancel-placement {
+  width: 44px;
+  padding: 0;
+  background: #233b47;
+  color: #dce5df;
+  border-color: #82978c77;
+}
+.has-staged-target .hint {
+  display: none;
+}
+.camp-panel[data-slot='sheet-content'] {
+  position: fixed;
+  z-index: 51;
+  inset: auto 24px 24px auto;
+  width: 360px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  padding: 20px;
+  background: linear-gradient(145deg, #253c47, #102531);
+  border: 1px solid #8b9f9477;
+  border-top: 2px solid #d5bc89;
+  outline: none;
+  overscroll-behavior: contain;
+  box-shadow: 0 20px 60px #06182399;
+}
+[data-slot='sheet-overlay'] {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #0a1d29a3;
+  backdrop-filter: blur(5px);
+}
+.panel-title h2 {
+  font: 600 20px 'Noto Serif SC';
+  margin: 0;
+}
+.panel-title {
+  min-height: 44px;
+  padding-bottom: 9px;
+}
+.panel-title > span {
+  gap: 10px;
+}
+.panel-title button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  margin: -8px -8px -8px 0;
+}
+.panel-title button svg {
+  width: 21px;
+  height: 21px;
+}
+.planning-note {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #bdcbbd;
+  margin: 12px 0;
+}
+.planning-note svg {
+  width: 14px;
+  height: 14px;
+  color: var(--gold);
+}
+.camp-wallet {
+  display: flex;
+  gap: 24px;
+  padding: 9px 0;
+  border-bottom: 1px solid #839d9d33;
+  color: #ead9b5;
+  font-size: 15px;
+}
+.camp-wallet span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.camp-wallet svg {
+  width: 17px;
+  height: 17px;
+}
+.camp-panel .section-label {
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-top: 17px;
+}
+.camp-panel .recruit-row {
+  min-height: 65px;
+  gap: 12px;
+}
+.camp-panel .recruit-row strong {
+  font-size: 16px;
+}
+.camp-panel .recruit-row small {
+  font-size: 12px;
+  margin-top: 5px;
+}
+.camp-panel .recruit-row > svg:first-child {
+  width: 28px;
+  height: 28px;
+}
+.camp-panel .cost {
+  font-size: 13px;
+  gap: 4px;
+}
+.camp-panel .cost svg {
+  width: 13px;
+  height: 13px;
+}
+.camp-panel .training-queue {
+  font-size: 12px;
+  min-height: 25px;
+}
+.camp-panel .training-queue small {
+  font-size: 11px;
+}
+.camp-panel .economy-actions button {
+  min-height: 48px;
+  font-size: 14px;
+}
+.camp-panel .build-row {
+  min-height: 58px;
+  font-size: 15px;
+}
+.camp-panel .build-row small {
+  font-size: 12px;
+}
+.camp-panel .economy-actions svg {
+  width: 18px;
+  height: 18px;
+}
+@media (pointer: coarse) {
+  .camera-tools .icon-button,
+  .top-actions .icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .close-help {
+    width: 44px;
+    height: 44px;
+  }
+  .how-to {
+    min-height: 44px;
+  }
+  .help-panel li p {
+    font-size: 14px;
+  }
+  .help-panel li b {
+    font-size: 16px;
+  }
+}
+@media (max-width: 700px) and (min-height: 521px) {
+  .game-shell {
+    --safe-bottom: max(12px, env(safe-area-inset-bottom));
+    --safe-top: env(safe-area-inset-top);
+    --deck-height: 151px;
+    --squad-bottom: calc(var(--safe-bottom) + var(--deck-height) + 8px);
+    --notice-bottom: calc(var(--squad-bottom) + 55px);
+  }
+  .topbar {
+    height: calc(91px + var(--safe-top));
+    padding: calc(7px + var(--safe-top)) 12px 0;
+    align-items: flex-start;
+    gap: 7px;
+    background: linear-gradient(#122431f7, #102531c9);
+  }
+  .wordmark {
+    height: 44px;
+    font-size: 15px;
+    letter-spacing: 1px;
+    gap: 6px;
+    margin: 0;
+  }
+  .wordmark > svg {
+    width: 24px;
+    height: 28px;
+  }
+  .wordmark small {
+    font-size: 10px;
+    letter-spacing: 3px;
+    margin-top: 4px;
+  }
+  .top-actions {
+    margin-left: auto;
+    gap: 3px;
+  }
+  .top-actions .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+  .top-actions .icon-button svg {
+    width: 20px;
+    height: 20px;
+  }
+  .top-actions .fullscreen {
+    display: none;
+  }
+  .resources {
+    left: 16px;
+    right: 16px;
+    top: calc(61px + var(--safe-top));
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 15px;
+    line-height: 20px;
+  }
+  .resources span {
+    gap: 7px;
+  }
+  .resources svg {
+    width: 16px;
+    height: 16px;
+  }
+  .resources em {
+    font-size: 12px;
+  }
+  .mission {
+    top: calc(105px + var(--safe-top));
+    left: 17px;
+    pointer-events: none;
+  }
+  .mission .eyebrow {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .mission h2 {
+    font-size: 21px;
+    margin: 7px 0;
+    letter-spacing: 1px;
+  }
+  .mission p {
+    font-size: 12px;
+  }
+  .objective-health {
+    width: 185px;
+    margin-top: 12px;
+  }
+  .battle-meta {
+    font-size: 11px;
+    margin-top: 9px;
+  }
+  .battle-meta > span:last-child {
+    margin-left: 10px;
+  }
+  .camera-tools {
+    right: 12px;
+    top: calc(104px + var(--safe-top));
+    gap: 5px;
+  }
+  .camera-tools .icon-button {
+    width: 44px;
+    height: 44px;
+    background: #18313de6;
+  }
+  .camera-tools svg {
+    width: 19px;
+    height: 19px;
+  }
+  .prologue {
+    top: 34%;
+    left: 7%;
+    max-width: 86%;
+  }
+  .prologue h1 {
+    font-size: clamp(28px, 8vw, 35px);
+    letter-spacing: 1px;
+    line-height: 1.6;
+    margin: 10px 0 16px;
+  }
+  .prologue .eyebrow {
+    font-size: 10px;
+  }
+  .prologue p {
+    font-size: 14px;
+    line-height: 1.8;
+    width: auto;
+  }
+  .prologue .begin {
+    width: min(290px, 100%);
+    min-height: 54px;
+    font-size: 16px;
+    padding: 13px 20px;
+    margin-top: 24px;
+  }
+  .prologue > small {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+  .how-to {
+    min-height: 44px;
+    margin-top: 8px;
+    font-size: 13px;
+  }
+  .mobile-break {
+    display: none;
+  }
+  .command-bar {
+    left: 12px;
+    right: 12px;
+    bottom: var(--safe-bottom);
+    width: auto;
+    min-width: 0;
+    transform: none;
+    padding: 10px;
+    gap: 8px;
+    min-height: var(--deck-height);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: 50px 72px;
+    border-top: 2px solid #d1b989;
+    box-shadow: 0 10px 35px #09172477;
+  }
+  .hero-emblem {
+    width: 47px;
+    height: 50px;
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .hero-info {
+    grid-column: 1 / 4;
+    grid-row: 1;
+    width: auto;
+    min-width: 0;
+    margin-left: 57px;
+    padding-right: 5px;
+  }
+  .hero-info .eyebrow {
+    display: none;
+  }
+  .hero-info strong {
+    font-size: 15px;
+    letter-spacing: 1px;
+    display: block;
+    margin: 0 0 7px;
+  }
+  .hero-info small {
+    font-size: 10px;
+    margin-top: 5px;
+    gap: 5px;
+  }
+  .health {
+    height: 4px;
+    margin-bottom: 3px;
+  }
+  .health [data-slot='progress-track'] {
+    height: 4px;
+  }
+  .selection-count {
+    grid-column: 4;
+    grid-row: 1;
+    justify-self: end;
+    display: grid;
+    grid-template-columns: auto auto;
+    width: auto;
+    margin: 0;
+    align-self: center;
+    column-gap: 5px;
+  }
+  .selection-count b {
+    font-size: 17px;
+  }
+  .selection-count svg {
+    width: 16px;
+    height: 16px;
+  }
+  .selection-count small {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+  .command-spacer {
+    display: none;
+  }
+  .command-bar .action {
+    grid-row: 2;
+    position: relative;
+    width: 100%;
+    height: 72px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 7px 1px 5px;
+    justify-content: center;
+    align-items: center;
+  }
+  .command-bar .action svg {
+    width: 25px;
+    height: 25px;
+  }
+  .command-bar .action span {
+    font-size: 12px;
+    line-height: 18px;
+  }
+  .action kbd {
+    display: none;
+  }
+  .action i {
+    font-size: 10px;
+    right: 5px;
+    top: 3px;
+    bottom: auto;
+    line-height: 12px;
+    color: #bdd1dc;
+  }
+  .squad-select {
+    left: 12px;
+    right: 132px;
+    bottom: var(--squad-bottom);
+    height: 44px;
+    transform: none;
+    gap: 5px;
+  }
+  .squad-select button {
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    font-size: 13px;
+    justify-content: center;
+  }
+  .squad-select svg {
+    width: 16px;
+    height: 16px;
+  }
+  .squad-select kbd {
+    display: none;
+  }
+  .camp-toggle {
+    right: 12px;
+    bottom: var(--squad-bottom);
+    width: 112px;
+    height: 44px;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 4px;
+    font-size: 13px;
+    background: #293d40f2;
+  }
+  .camp-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+  .camp-toggle > svg:last-child {
+    display: none;
+  }
+  .camp-toggle b {
+    font-size: 11px;
+  }
+  .map-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: absolute;
+    left: 12px;
+    bottom: var(--notice-bottom);
+    width: 106px;
+    height: 44px;
+    background: #1b323deb;
+    border: 1px solid #91a79d66;
+    font-size: 12px;
+    color: #cedad8;
+  }
+  .map-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+  .minimap-wrap {
+    display: none;
+    left: 12px;
+    bottom: calc(var(--notice-bottom) + 51px);
+    width: 166px;
+    padding: 7px;
+    z-index: 7;
+  }
+  .map-open .minimap-wrap {
+    display: block;
+  }
+  .minimap-head {
+    font-size: 12px;
+    letter-spacing: 0;
+    margin-bottom: 7px;
+  }
+  .minimap-head svg {
+    width: 14px;
+    height: 14px;
+  }
+  .minimap-head > span:last-child {
+    font-size: 10px;
+  }
+  .minimap-caption {
+    font-size: 10px;
+    margin-top: 6px;
+  }
+  .hint {
+    left: 126px;
+    right: 12px;
+    bottom: var(--notice-bottom);
+    min-height: 44px;
+    max-width: none;
+    transform: none;
+    margin: 0;
+    padding: 7px 10px;
+    font-size: 12px;
+    line-height: 1.6;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    background: #182e3de8;
+  }
+  .hint button {
+    min-width: 36px;
+    min-height: 36px;
+  }
+  .target-hint {
+    left: 12px;
+    right: 12px;
+    font-size: 14px;
+  }
+  .is-targeting .map-toggle,
+  .is-targeting .minimap-wrap {
+    display: none;
+  }
+  .target-confirm {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    bottom: var(--notice-bottom);
+    transform: none;
+    padding: 12px;
+  }
+  .target-confirm p {
+    font-size: 14px;
+  }
+  .target-confirm button {
+    min-height: 48px;
+    font-size: 15px;
+  }
+  .target-confirm .cancel-placement {
+    width: 48px;
+  }
+  .camp-panel[data-slot='sheet-content'] {
+    inset: auto 0 0;
+    width: 100%;
+    max-width: none;
+    max-height: 84dvh;
+    padding: 18px 20px calc(20px + env(safe-area-inset-bottom));
+    border-radius: 16px 16px 0 0;
+    animation: sheet-rise 0.2s ease-out;
+  }
+  .camp-panel .panel-title {
+    font-size: 20px;
+  }
+  .camp-panel .recruit-row {
+    min-height: 68px;
+  }
+  .camp-panel .training-queue {
+    min-height: 28px;
+  }
+  .camp-panel .economy-actions button {
+    font-size: 14px;
+  }
+  .camp-panel .build-row {
+    min-height: 60px;
+  }
+  .version {
+    right: 13px;
+    bottom: 2px;
+    font-size: 8px;
+    letter-spacing: 1px;
+    pointer-events: none;
+  }
+  .is-prologue .command-bar {
+    display: none;
+  }
+  .is-prologue .version {
+    bottom: 12px;
+  }
+  .is-prologue .camera-tools {
+    top: auto;
+    bottom: 30px;
+    right: 14px;
+    flex-direction: row;
+  }
+  .is-prologue .camera-tools .icon-button {
+    background: #1c3440d6;
+  }
+  .is-prologue .prologue {
+    max-height: 65%;
+    overflow-y: auto;
+    padding-bottom: 12px;
+  }
+  .help-panel {
+    padding: 25px 22px;
+  }
+  .help-panel .eyebrow {
+    font-size: 10px;
+    letter-spacing: 1px;
+    display: block;
+    padding-right: 30px;
+  }
+  .help-panel h2 {
+    font-size: 23px;
+    margin: 14px 0 20px;
+  }
+  .help-panel li b {
+    font-size: 16px;
+  }
+  .help-panel li p {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .control-notes {
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .close-help {
+    width: 44px;
+    height: 44px;
+    right: 10px;
+    top: 12px;
+  }
+  .help-panel .begin {
+    min-height: 48px;
+    font-size: 16px;
+  }
+  .result-panel .begin {
+    min-height: 48px;
+  }
+  .result-panel p {
+    font-size: 14px;
+  }
+}
+@media (max-width: 360px) and (min-height: 521px) {
+  .wordmark {
+    font-size: 13px;
+  }
+  .wordmark > svg {
+    width: 21px;
+  }
+  .wordmark small {
+    font-size: 9px;
+  }
+  .topbar {
+    gap: 3px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .top-actions {
+    gap: 0;
+  }
+  .squad-select {
+    right: 117px;
+    gap: 4px;
+  }
+  .squad-select button {
+    font-size: 12px;
+    gap: 3px;
+  }
+  .squad-select button svg {
+    width: 14px;
+    height: 14px;
+  }
+  .camp-toggle {
+    width: 97px;
+    font-size: 12px;
+  }
+  .command-bar .action span {
+    font-size: 11px;
+  }
+  .hero-info strong {
+    font-size: 13px;
+  }
+  .hint {
+    font-size: 11px;
+  }
+  .mission h2 {
+    font-size: 19px;
+  }
+  .prologue p {
+    font-size: 14px;
+  }
+  .prologue h1 {
+    font-size: 29px;
+  }
+  .camera-tools .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+}
+@media (max-height: 520px) {
+  .game-shell {
+    --land-left: max(14px, env(safe-area-inset-left));
+    --land-right: max(14px, env(safe-area-inset-right));
+    --land-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .topbar {
+    height: 57px;
+    padding: 6px var(--land-right) 5px var(--land-left);
+  }
+  .wordmark {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+  .wordmark small {
+    font-size: 10px;
+  }
+  .top-actions {
+    gap: 5px;
+  }
+  .top-actions .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+  .top-actions svg {
+    width: 20px;
+    height: 20px;
+  }
+  .resources {
+    font-size: 15px;
+    gap: 19px;
+  }
+  .resources svg {
+    width: 17px;
+    height: 17px;
+  }
+  .resources em {
+    font-size: 12px;
+  }
+  .mission {
+    top: 75px;
+    left: var(--land-left);
+  }
+  .mission .eyebrow {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .mission h2 {
+    font-size: 20px;
+    margin: 6px 0 8px;
+  }
+  .mission p {
+    font-size: 12px;
+  }
+  .objective-health {
+    width: 175px;
+  }
+  .battle-meta {
+    font-size: 11px;
+  }
+  .camera-tools {
+    right: var(--land-right);
+    top: 73px;
+    gap: 5px;
+  }
+  .camera-tools .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+  .camera-tools svg {
+    width: 19px;
+    height: 19px;
+  }
+  .command-bar {
+    left: auto;
+    right: var(--land-right);
+    bottom: var(--land-bottom);
+    width: 526px;
+    min-width: 0;
+    padding: 9px;
+    gap: 8px;
+    height: 95px;
+    min-height: 0;
+    transform: none;
+  }
+  .hero-emblem {
+    width: 49px;
+    height: 67px;
+  }
+  .hero-info {
+    width: 125px;
+    min-width: 0;
+  }
+  .hero-info strong {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .hero-info .eyebrow {
+    font-size: 10px;
+  }
+  .hero-info small {
+    font-size: 10px;
+  }
+  .health {
+    height: 4px;
+  }
+  .health [data-slot='progress-track'] {
+    height: 4px;
+  }
+  .selection-count {
+    display: none;
+  }
+  .command-bar .action {
+    width: 70px;
+    height: 72px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    padding: 4px 0;
+  }
+  .command-bar .action svg {
+    width: 24px;
+    height: 24px;
+  }
+  .command-bar .action span {
+    font-size: 12px;
+  }
+  .action i {
+    font-size: 10px;
+    top: 3px;
+    bottom: auto;
+  }
+  .action kbd {
+    display: none;
+  }
+  .squad-select {
+    right: calc(var(--land-right) + 179px);
+    left: auto;
+    bottom: calc(var(--land-bottom) + 104px);
+    height: 44px;
+    gap: 6px;
+    transform: none;
+  }
+  .squad-select button {
+    height: 44px;
+    min-width: 66px;
+    padding: 7px 9px;
+    gap: 5px;
+    font-size: 13px;
+  }
+  .squad-select svg {
+    width: 16px;
+    height: 16px;
+  }
+  .squad-select kbd {
+    display: none;
+  }
+  .camp-toggle {
+    right: var(--land-right);
+    bottom: calc(var(--land-bottom) + 104px);
+    height: 44px;
+    min-width: 160px;
+    font-size: 14px;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .camp-toggle svg {
+    width: 19px;
+    height: 19px;
+  }
+  .minimap-wrap {
+    display: block;
+    left: var(--land-left);
+    bottom: var(--land-bottom);
+    width: 134px;
+    padding: 6px;
+  }
+  .minimap-head {
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+  .minimap-caption {
+    font-size: 9px;
+    display: block;
+  }
+  .minimap-head svg {
+    width: 13px;
+    height: 13px;
+  }
+  .minimap-head > span:last-child {
+    font-size: 10px;
+  }
+  .hint {
+    bottom: calc(var(--land-bottom) + 158px);
+    left: auto;
+    right: calc(var(--land-right) + 54px);
+    transform: none;
+    max-width: 355px;
+    min-height: 35px;
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 7px 11px;
+  }
+  .target-confirm {
+    bottom: calc(var(--land-bottom) + 157px);
+    left: auto;
+    right: calc(var(--land-right) + 54px);
+    transform: none;
+    width: 365px;
+    padding: 10px;
+  }
+  .target-confirm p {
+    font-size: 12px;
+    margin-bottom: 7px;
+  }
+  .target-confirm button {
+    min-height: 44px;
+  }
+  .hint button {
+    min-width: 30px;
+    min-height: 30px;
+  }
+  .camp-panel[data-slot='sheet-content'] {
+    inset: 0 0 0 auto;
+    width: 360px;
+    max-width: 55vw;
+    max-height: 100dvh;
+    height: 100dvh;
+    padding: 16px 21px 20px;
+    overflow-y: auto;
+    border-top: 0;
+    border-left: 2px solid #d5bc89;
+  }
+  .camp-panel .recruit-row {
+    min-height: 62px;
+  }
+  .camp-panel .planning-note {
+    font-size: 12px;
+  }
+  .camp-panel .recruit-row strong {
+    font-size: 16px;
+  }
+  .camp-panel .recruit-row small {
+    font-size: 12px;
+  }
+  .camp-panel .section-label {
+    font-size: 12px;
+  }
+  .help-panel[data-slot='dialog-content'] {
+    width: 600px;
+    max-width: calc(100vw - 40px);
+    max-height: calc(100dvh - 24px);
+    padding: 24px;
+  }
+  .help-panel li b {
+    font-size: 15px;
+  }
+  .help-panel li p {
+    font-size: 13px;
+  }
+  .help-panel h2 {
+    font-size: 23px;
+  }
+  .help-panel .begin {
+    min-height: 44px;
+  }
+  .close-help {
+    width: 44px;
+    height: 44px;
+  }
+  .is-prologue .prologue {
+    left: 32%;
+    top: 26%;
+    max-width: 350px;
+  }
+  .prologue h1 {
+    font-size: 28px;
+  }
+  .prologue p {
+    font-size: 13px;
+  }
+  .prologue .begin {
+    min-height: 48px;
+    font-size: 15px;
+    margin-top: 17px;
+  }
+  .prologue > small {
+    font-size: 11px;
+  }
+  .how-to {
+    display: none;
+  }
+  .is-prologue .camera-tools {
+    top: auto;
+    bottom: 22px;
+    flex-direction: row;
+  }
+  .is-prologue .command-bar {
+    display: none;
+  }
+  .version {
+    font-size: 8px;
+    bottom: 2px;
+  }
+}
+@media (max-height: 520px) and (max-width: 740px) {
+  .command-bar {
+    width: 476px;
+  }
+  .hero-info {
+    width: 101px;
+  }
+  .hero-info strong {
+    font-size: 12px;
+  }
+  .hero-info small {
+    font-size: 9px;
+  }
+  .command-bar .action {
+    width: 62px;
+  }
+  .command-bar .action span {
+    font-size: 11px;
+  }
+  .minimap-wrap {
+    width: 106px;
+  }
+  .minimap-caption {
+    display: none;
+  }
+  .squad-select {
+    right: calc(var(--land-right) + 152px);
+  }
+  .squad-select button {
+    min-width: 59px;
+    font-size: 12px;
+    padding: 5px 7px;
+  }
+  .camp-toggle {
+    min-width: 139px;
+    font-size: 13px;
+  }
+  .resources {
+    font-size: 13px;
+    gap: 12px;
+  }
+  .top-actions .fullscreen {
+    display: none;
+  }
+  .mission h2 {
+    font-size: 17px;
+  }
+  .objective-health {
+    width: 150px;
+  }
+  .mission .eyebrow {
+    font-size: 9px;
+  }
+  .battle-meta {
+    font-size: 10px;
+  }
+  .hint {
+    max-width: 320px;
+    font-size: 11px;
+  }
+  .target-confirm {
+    width: 320px;
+  }
+  .is-prologue .prologue {
+    left: 32%;
+    top: 26%;
+  }
+  .prologue h1 {
+    font-size: 25px;
+  }
+  .prologue p {
+    font-size: 12px;
+  }
+}
+@keyframes sheet-rise {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .camp-panel {
+    animation: none !important;
+  }
+}
+@media (max-width: 700px) and (min-height: 521px) {
+  .mission {
+    left: 12px;
+    padding: 10px 12px 12px;
+    width: 244px;
+    background: linear-gradient(90deg, #19313de8, #19313d9c 72%, #19313d00);
+  }
+  .mission h2 {
+    font-size: 20px;
+  }
+  .mission .objective-health {
+    width: 183px;
+  }
+  .mission .eyebrow {
+    color: #ead4a5;
+  }
+  .mission p,
+  .battle-meta {
+    color: #d9e5e3;
+  }
+}
+@media (max-height: 520px) {
+  .mission {
+    padding: 9px 12px 12px;
+    left: var(--land-left);
+    width: 235px;
+    background: linear-gradient(90deg, #19313de8, #19313d9c 72%, #19313d00);
+  }
+  .mission p,
+  .battle-meta {
+    color: #d9e5e3;
+  }
+  .mission .eyebrow {
+    color: #ead4a5;
+  }
+}
+@media (max-height: 520px) and (max-width: 740px) {
+  .mission {
+    width: 206px;
+    padding: 9px 10px;
+  }
+}

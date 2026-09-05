@@ -1,4 +1,5 @@
 import * as T from 'three';
+import { BattleGestures, closestScreenUnit } from './interaction';
 import {
   Battle,
   MINE,
@@ -9,6 +10,7 @@ import {
 } from './simulation';
 export type SceneController = {
   dispose: () => void;
+  setTarget: (mode: 'tower' | 'blizzard' | null, p?: Point) => void;
   focus: (p: Point) => void;
   rotate: () => void;
   zoom: (direction: number) => void;
@@ -27,7 +29,8 @@ export function createScene(
     alpha: false,
     powerPreference: 'high-performance',
   });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
+  const mobileGPU = matchMedia('(pointer: coarse)').matches;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, mobileGPU ? 1.35 : 1.6));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = T.PCFSoftShadowMap;
   renderer.outputColorSpace = T.SRGBColorSpace;
@@ -35,7 +38,7 @@ export function createScene(
   renderer.toneMappingExposure = 1.15;
   host.appendChild(renderer.domElement);
   const camera = new T.OrthographicCamera(-40, 40, 28, -28, 0.1, 220);
-  let size = 53,
+  let size = host.clientHeight <= 520 ? 42 : host.clientWidth < 700 ? 46 : 53,
     angle = 0.64;
   const center = new T.Vector3(0, 0, 0);
   const wanted = center.clone();
@@ -44,7 +47,7 @@ export function createScene(
   const sun = new T.DirectionalLight('#ffe0ad', 3.2);
   sun.position.set(-28, 48, 25);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.mapSize.set(mobileGPU ? 1024 : 2048, mobileGPU ? 1024 : 2048);
   Object.assign(sun.shadow.camera, {
     left: -45,
     right: 45,
@@ -681,7 +684,7 @@ export function createScene(
     }
     return g;
   }
-  const snowCount = 600,
+  const snowCount = mobileGPU ? 320 : 600,
     snowPositions = new Float32Array(snowCount * 3);
   for (let i = 0; i < snowCount; i++) {
     snowPositions[i * 3] = (rnd() - 0.5) * 95;
@@ -732,8 +735,10 @@ export function createScene(
     const extent = size * (aspect < 0.8 ? 1.16 : 1);
     camera.left = (-extent * aspect) / 2;
     camera.right = (extent * aspect) / 2;
-    camera.top = extent / 2;
-    camera.bottom = -extent / 2;
+    const hudOffset =
+      extent * (host.clientHeight <= 520 ? 0.12 : aspect < 0.8 ? 0.06 : 0);
+    camera.top = extent / 2 - hudOffset;
+    camera.bottom = -extent / 2 - hudOffset;
     camera.updateProjectionMatrix();
     camera.position.set(
       center.x + Math.sin(angle) * 60,
@@ -745,65 +750,84 @@ export function createScene(
   const observer = new ResizeObserver(resize);
   observer.observe(host);
   resize();
-  const pointers = new Map<number, { x: number; y: number }>();
-  let down = { x: 0, y: 0 },
-    drag = false,
-    wasMulti = false,
-    pinch = 0;
+  const gestures = new BattleGestures();
   const onDown = (e: PointerEvent) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
     host.setPointerCapture(e.pointerId);
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    down = { x: e.clientX, y: e.clientY };
-    drag = false;
-    if (pointers.size > 1) {
-      wasMulti = true;
-      const p = [...pointers.values()];
-      pinch = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
-    }
+    gestures.begin(e.pointerId, { x: e.clientX, y: e.clientY }, e.pointerType);
   };
   const onMove = (e: PointerEvent) => {
-    const prev = pointers.get(e.pointerId);
-    if (!prev) return;
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (pointers.size > 1) {
-      const p = [...pointers.values()];
-      const d = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
-      if (d > 0 && pinch > 0)
-        size = T.MathUtils.clamp((size * pinch) / d, 25, 85);
-      pinch = d;
-      drag = true;
-      return;
-    }
-    if (Math.hypot(e.clientX - down.x, e.clientY - down.y) > 7) drag = true;
-    if (drag) {
-      const a = pick(prev.x, prev.y),
-        b = pick(e.clientX, e.clientY);
-      if (a && b) {
-        wanted.x = T.MathUtils.clamp(wanted.x + a.x - b.x, -22, 22);
-        wanted.z = T.MathUtils.clamp(wanted.z + a.z - b.z, -20, 20);
-      }
+    const gesture = gestures.move(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (!gesture) return;
+    if (gesture.kind === 'pinch')
+      size = T.MathUtils.clamp(size * gesture.ratio, 25, 85);
+    const a = pick(gesture.from.x, gesture.from.y),
+      b = pick(gesture.to.x, gesture.to.y);
+    if (a && b) {
+      wanted.x = T.MathUtils.clamp(wanted.x + a.x - b.x, -22, 22);
+      wanted.z = T.MathUtils.clamp(wanted.z + a.z - b.z, -20, 20);
     }
   };
   const onUp = (e: PointerEvent) => {
-    if (!drag && !wasMulti && e.type !== 'pointercancel') {
-      const p = pick(e.clientX, e.clientY);
-      if (p) {
-        const hit = battle.units
-          .filter((u) => u.team === 'ally' && u.hp > 0)
-          .sort(
-            (a, b) =>
-              Math.hypot(a.x - p.x, a.z - p.z) -
-              Math.hypot(b.x - p.x, b.z - p.z),
-          )[0];
-        onTap(
-          p,
-          hit && Math.hypot(hit.x - p.x, hit.z - p.z) < 1.5 ? hit : undefined,
-        );
-      }
-    }
-    pointers.delete(e.pointerId);
-    if (!pointers.size) wasMulti = false;
+    const tap = gestures.end(
+      e.pointerId,
+      { x: e.clientX, y: e.clientY },
+      e.type === 'pointercancel',
+    );
+    if (!tap) return;
+    const p = pick(tap.x, tap.y);
+    if (!p) return;
+    const rect = host.getBoundingClientRect();
+    const candidates = battle.units
+      .filter((u) => u.team === 'ally' && u.hp > 0)
+      .map((unit) => {
+        const projected = new T.Vector3(unit.x, 1.25, unit.z).project(camera);
+        return {
+          unit,
+          x: rect.left + ((projected.x + 1) * rect.width) / 2,
+          y: rect.top + ((1 - projected.y) * rect.height) / 2,
+        };
+      });
+    const hit = closestScreenUnit(
+      candidates,
+      tap,
+      tap.type === 'touch' ? 28 : 18,
+    );
+    onTap(p, hit?.unit);
   };
+  // Visible placement marker stays in world space while the camera moves.
+  let targetMode: 'tower' | 'blizzard' | null = null;
+  let targetPoint: Point | null = null;
+  const targetMaterial = new T.MeshBasicMaterial({
+    color: '#b7edcf',
+    transparent: true,
+    opacity: 0.85,
+    side: T.DoubleSide,
+    depthWrite: false,
+  });
+  allMaterials.add(targetMaterial);
+  const targetGroup = new T.Group();
+  targetGroup.visible = false;
+  scene.add(targetGroup);
+  const targetRingGeometry = new T.RingGeometry(0.97, 1, 64);
+  targetRingGeometry.rotateX(-Math.PI / 2);
+  geometries.add(targetRingGeometry);
+  const targetRing = new T.Mesh(targetRingGeometry, targetMaterial);
+  targetGroup.add(targetRing);
+  const targetFillMaterial = targetMaterial.clone();
+  targetFillMaterial.opacity = 0.14;
+  allMaterials.add(targetFillMaterial);
+  const targetFillGeometry = new T.CircleGeometry(1, 64);
+  targetFillGeometry.rotateX(-Math.PI / 2);
+  geometries.add(targetFillGeometry);
+  const targetFill = new T.Mesh(targetFillGeometry, targetFillMaterial);
+  targetGroup.add(targetFill);
+  for (const a of [0, Math.PI / 2]) {
+    const m = new T.Mesh(boxGeo, targetMaterial);
+    m.scale.set(1.4, 0.025, 0.08);
+    m.rotation.y = a;
+    targetGroup.add(m);
+  }
   const onWheel = (e: WheelEvent) => {
     e.preventDefault();
     size = T.MathUtils.clamp(size + e.deltaY * 0.035, 25, 85);
@@ -826,6 +850,18 @@ export function createScene(
     if (!visible) return;
     clock += dt;
     battle.step(dt);
+    if (targetMode && targetPoint) {
+      const valid = !battle.targetError(targetMode, targetPoint);
+      const color = valid ? '#b7edcf' : '#ef9b83';
+      targetMaterial.color.set(color);
+      targetFillMaterial.color.set(color);
+      const radius = targetMode === 'blizzard' ? 8 : 2;
+      targetRing.scale.set(radius, 1, radius);
+      targetFill.scale.set(radius, 1, radius);
+      targetGroup.position.set(targetPoint.x, 0.26, targetPoint.z);
+      targetGroup.visible = battle.phase === 'playing';
+    } else targetGroup.visible = false;
+
     center.lerp(wanted, Math.min(1, dt * 7));
     updateCamera();
     const buildingIds = new Set(battle.buildings.map((b) => b.id));
@@ -974,6 +1010,11 @@ export function createScene(
   }
   frame = requestAnimationFrame(loop);
   return {
+    setTarget(mode, p) {
+      targetMode = mode;
+      targetPoint = p ?? null;
+      targetGroup.visible = !!mode && !!p;
+    },
     focus(p) {
       wanted.set(p.x, 0, p.z);
     },
@@ -987,6 +1028,7 @@ export function createScene(
       disposed = true;
       cancelAnimationFrame(frame);
       observer.disconnect();
+      gestures.cancel();
       document.removeEventListener('visibilitychange', visibility);
       host.removeEventListener('pointerdown', onDown);
       host.removeEventListener('pointermove', onMove);
