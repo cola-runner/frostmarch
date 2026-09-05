@@ -80,7 +80,7 @@ export class Battle {
   novaCooldown = 0;
   blizzardCooldown = 0;
   nextWave = 24;
-  notice = '指挥官，北境军团听候你的命令。';
+  notice = 'Commander, the northern legions await your orders.';
   queue: { kind: 'guard' | 'ranger' | 'worker'; remaining: number }[] = [];
   private sequence = 1;
   private income = 0;
@@ -104,7 +104,7 @@ export class Battle {
     this.queue = [];
     this.income = 0;
     this.sequence = 1;
-    this.notice = '指挥官，北境军团听候你的命令。';
+    this.notice = 'Commander, the northern legions await your orders.';
     this.addBuilding('keep', 'ally', -7, 18);
     this.addBuilding('keep', 'enemy', 7, -19);
     this.addBuilding('tower', 'enemy', 0, -10);
@@ -185,7 +185,8 @@ export class Battle {
   start() {
     if (this.phase === 'ready') {
       this.phase = 'playing';
-      this.notice = '先采集资源、招募军队，再跨过冰河进攻。';
+      this.notice =
+        'Gather resources, recruit troops, then cross the frozen river.';
     }
   }
   pause() {
@@ -214,7 +215,7 @@ export class Battle {
       return false;
     const selected = this.selected;
     if (!selected.length) {
-      this.notice = '先选择英雄或军队。';
+      this.notice = 'Select your hero or army first.';
       return false;
     }
     const target = {
@@ -230,7 +231,7 @@ export class Battle {
       if (u.kind === 'worker') u.harvest = 0;
     });
     this.fx('order', target, 1, 'ally');
-    this.notice = '命令已下达 · 部队将自动攻击沿途敌人';
+    this.notice = 'Orders received · Troops engage enemies along the way';
     return true;
   }
   recruit(kind: 'guard' | 'ranger' | 'worker') {
@@ -238,21 +239,21 @@ export class Battle {
     if (!(kind in COSTS)) return false;
     const cost = COSTS[kind];
     if (this.population + this.queue.length >= 30) {
-      this.notice = '人口已满 · 最多 30 人';
+      this.notice = 'Army limit reached · Maximum 30 units';
       return false;
     }
     if (this.queue.length >= 5) {
-      this.notice = '训练队列已满';
+      this.notice = 'Training queue full';
       return false;
     }
     if (this.gold < cost.gold || this.wood < cost.wood) {
-      this.notice = '资源不足，工人正在采集中。';
+      this.notice = 'Not enough resources. Workers are gathering more.';
       return false;
     }
     this.gold -= cost.gold;
     this.wood -= cost.wood;
     this.queue.push({ kind, remaining: 4 });
-    this.notice = '训练开始 · 4 秒后抵达';
+    this.notice = 'Training started · Ready in 4 seconds';
     return true;
   }
   setWork(work: 'gold' | 'wood') {
@@ -266,7 +267,10 @@ export class Battle {
       u.goal = null;
       u.returning = u.cargo > 0;
     }
-    this.notice = work === 'gold' ? '工人已前往金矿。' : '工人已前往霜松林。';
+    this.notice =
+      work === 'gold'
+        ? 'Workers assigned to the gold mine.'
+        : 'Workers assigned to gather timber.';
   }
   build(p: Point) {
     if (
@@ -276,7 +280,7 @@ export class Battle {
     )
       return false;
     if (this.gold < 100 || this.wood < 90) {
-      this.notice = '箭塔需要 100 金币和 90 木材';
+      this.notice = 'A tower costs 100 gold and 90 wood';
       return false;
     }
     if (
@@ -287,7 +291,7 @@ export class Battle {
         (b) => b.hp > 0 && distance(b, p) < (b.kind === 'keep' ? 7 : 4),
       )
     ) {
-      this.notice = '请选择冰河南岸的空地。';
+      this.notice = 'Choose clear ground south of the river.';
       return false;
     }
     if (
@@ -295,7 +299,7 @@ export class Battle {
         (b) => b.team === 'ally' && b.kind === 'tower' && b.hp > 0,
       ).length >= 5
     ) {
-      this.notice = '最多建造 5 座箭塔';
+      this.notice = 'Tower limit reached · Maximum 5';
       return false;
     }
     this.gold -= 100;
@@ -303,7 +307,7 @@ export class Battle {
     const b = this.addBuilding('tower', 'ally', p.x, p.z);
     b.ready = 6;
     this.fx('spawn', p, 2, 'ally');
-    this.notice = '箭塔建造中 · 6 秒后完工';
+    this.notice = 'Tower under construction · Ready in 6 seconds';
     return true;
   }
   nova() {
@@ -325,7 +329,7 @@ export class Battle {
       }
     for (const b of this.buildings)
       if (b.team === 'enemy' && distance(b, h) < 11) this.hurt(b, 100);
-    this.notice = '凛冬之环 · 周围敌人冻结减速';
+    this.notice = 'Frost Nova · Nearby enemies are chilled and slowed';
     return true;
   }
   blizzard(p: Point) {
@@ -340,17 +344,17 @@ export class Battle {
     )
       return false;
     if (Math.abs(p.x) > 30 || Math.abs(p.z) > 25) {
-      this.notice = '请选择战场内的位置';
+      this.notice = 'Choose a position on the battlefield';
       return false;
     }
     if (distance(h, p) > 26) {
-      this.notice = '目标太远 · 靠近英雄 26 米以内';
+      this.notice = 'Out of range · Target within 26 m of your hero';
       return false;
     }
     this.mana -= 55;
     this.blizzardCooldown = 22;
     this.fx('blizzard', p, 4, 'ally');
-    this.notice = '暴风雪降临 · 持续轰击目标区域';
+    this.notice = 'Blizzard unleashed · Ice rains down on the target area';
     return true;
   }
   fx(
@@ -412,7 +416,7 @@ export class Battle {
         );
         u.goal = { x: -7, z: 18 };
       }
-      this.notice = `第 ${this.wave} 波霜烬军团正在进攻！`;
+      this.notice = `Ashfrost wave ${this.wave} is attacking!`;
     }
     if (this.queue.length) {
       this.queue[0].remaining -= dt;
@@ -424,7 +428,7 @@ export class Battle {
         const u = this.addUnit(job.kind, 'ally', keep.x + 5, keep.z - 4);
         u.selected = job.kind !== 'worker';
         this.fx('spawn', u, 1.2, 'ally');
-        this.notice = '增援已抵达，等待你的指令。';
+        this.notice = 'Reinforcements have arrived. Issue your orders.';
       }
     }
     for (const e of this.effects) {
@@ -578,14 +582,14 @@ export class Battle {
       )
     ) {
       this.phase = 'lost';
-      this.notice = '北境防线失守。整顿军队，再战一次。';
+      this.notice = 'The northern line has fallen. Regroup and try again.';
     } else if (
       this.buildings.some(
         (b) => b.kind === 'keep' && b.team === 'enemy' && b.hp <= 0,
       )
     ) {
       this.phase = 'won';
-      this.notice = '寒霜要塞已被攻破。黎明属于北境。';
+      this.notice = 'Frostkeep has fallen. The dawn belongs to the North.';
     }
   }
   snapshot() {

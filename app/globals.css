@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 :root {
   --ink: #0e1a23;
   --panel: #142530;
@@ -8,7 +8,7 @@
   --muted: #a3b7bf;
   --blue: #9fe1ee;
   color-scheme: dark;
-  font-family: 'Noto Sans SC', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: var(--text);
   background: var(--ink);
 }
@@ -104,7 +104,7 @@ p {
 }
 .wordmark small {
   display: block;
-  font-family: 'Noto Serif SC', serif;
+  font-family: 'Cinzel', serif;
   font-size: 11px;
   letter-spacing: 7px;
   margin-top: 3px;
@@ -155,7 +155,7 @@ p {
 }
 .mission h2 {
   font:
-    600 23px 'Noto Serif SC',
+    600 23px 'Cinzel',
     serif;
   letter-spacing: 2px;
   margin: 10px 0;
@@ -190,7 +190,7 @@ p {
 }
 .prologue h1 {
   font:
-    600 clamp(30px, 3.7vw, 55px)/1.55 'Noto Serif SC',
+    600 clamp(30px, 3.7vw, 55px)/1.55 'Cinzel',
     serif;
   letter-spacing: 5px;
   margin: 15px 0 19px;
@@ -265,7 +265,7 @@ p {
   font-size: 10px;
 }
 .hero-info strong {
-  font: 600 18px 'Noto Serif SC';
+  font: 600 18px 'Cinzel';
   display: block;
   margin: 5px 0 8px;
 }
@@ -822,7 +822,7 @@ p {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font: 600 16px 'Noto Serif SC';
+  font: 600 16px 'Cinzel';
   color: #e0d4b6;
   padding-bottom: 13px;
   border-bottom: 1px solid #99b0a522;
@@ -991,7 +991,7 @@ p {
   stroke-width: 1;
 }
 .result-panel h2 {
-  font: 600 29px/1.6 'Noto Serif SC';
+  font: 600 29px/1.6 'Cinzel';
   letter-spacing: 3px;
 }
 .result-panel p {
@@ -1050,7 +1050,7 @@ p {
   border-top: 2px solid var(--gold);
 }
 .help-panel h2 {
-  font: 600 25px/1.6 'Noto Serif SC';
+  font: 600 25px/1.6 'Cinzel';
   letter-spacing: 1px;
   margin: 14px 0 24px;
 }
@@ -1841,4 +1841,31 @@ p {
   z-index: 50;
   background: #091b29bd;
   backdrop-filter: blur(9px);
+}
+
+/* English labels need room to wrap without crowding the command deck. */
+.hero-info {
+  min-width: 0;
+}
+.hero-info strong {
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+.wordmark small {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+}
+.action span {
+  text-align: center;
+  line-height: 1.2;
+}
+.prologue h1 {
+  letter-spacing: -0.025em;
+}
+.prologue p {
+  max-width: 32ch;
+}
+
+.is-prologue .mission .battle-meta {
+  visibility: hidden;
 }

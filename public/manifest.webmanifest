@@ -1,1 +1,26 @@
-{"name":"Frostmarch · 霜境远征","short_name":"霜境远征","description":"原创 3D 冰雪奇幻即时战略战役","id":"/","start_url":"/","scope":"/","display":"standalone","orientation":"any","background_color":"#142735","theme_color":"#142735","icons":[{"src":"/icon-192.png","sizes":"192x192","type":"image/png"},{"src":"/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}
+{
+  "name": "Frostmarch",
+  "short_name": "Frostmarch",
+  "description": "An original 3D fantasy RTS. Command the northern legions and reclaim Frostkeep.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#142735",
+  "theme_color": "#142735",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "lang": "en"
+}
