@@ -1,7 +1,7 @@
 # Credits
 
 - **Game design, source and procedural scene:** Frostmarch contributors; MIT.
-- **艾拉 · 霜刃 portrait:** original image generated for this project using OpenAI image generation. The optimized `public/hero.webp` is included under the repository license. No existing franchise character was used as a reference.
+- **Ayla Frostblade portrait:** original image generated for this project using OpenAI image generation. The optimized `public/hero.webp` is included under the repository license. No existing franchise character was used as a reference.
 - **3D rendering:** [Three.js](https://github.com/mrdoob/three.js), MIT.
 - **UI:** [React](https://github.com/facebook/react), MIT; [Base UI](https://github.com/mui/base-ui), MIT; generated shadcn components retain their upstream license.
 - **Icons:** [Lucide](https://lucide.dev/license), ISC.

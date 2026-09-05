@@ -1,136 +1,102 @@
-<div align="center">
+<p align="center"><img src="public/favicon.svg" width="64" alt="Frostmarch emblem"></p>
 
-<img src="public/favicon.svg" width="76" alt="Frostmarch snowflake emblem" />
+# FROSTMARCH
 
-# FROSTMARCH · 霜境远征
+**Winter has come. Hold the North.**
 
-**寒冬已至。王国，由你守护。**
+An original, open-source 3D fantasy RTS demo built with **Three.js, TypeScript, React, and PWA support**. Lead Ayla Frostblade and the northern legions across a frozen frontier. Gather resources, recruit troops, unleash frost magic, and destroy Frostkeep before your hero or home keep falls.
 
-An original, mobile-first 3D fantasy RTS. A playable northern-frontier skirmish, built for the browser.
+[Source](https://github.com/cola-runner/frostmarch) · [Releases](https://github.com/cola-runner/frostmarch/releases) · [Owner preview](https://frostmarch-cola.owen-garcia716.chatgpt.site)
 
-[![MIT License](https://img.shields.io/badge/license-MIT-d8bd89?style=flat-square)](LICENSE)
-[![CI](https://github.com/cola-runner/frostmarch/actions/workflows/ci.yml/badge.svg)](https://github.com/cola-runner/frostmarch/actions/workflows/ci.yml)
+The hosted preview currently requires the project owner's account. The source and downloadable static build are public and can be run locally or hosted independently.
 
-</div>
+## Play
 
-## 这是什么
+- Select your hero or army, then click the ground to move and automatically engage nearby enemies.
+- Workers collect gold and wood. Open **Camp & Recruit** to train troops, change gathering assignments, or build defensive towers.
+- **Frost Nova** damages and slows nearby enemies. **Blizzard** rains ice onto a target area for four seconds.
+- Destroy **Frostkeep** while protecting Ayla and your home keep.
 
-《霜境远征》是受经典奇幻 RTS 启发的原创开源 demo。指挥霜誓守卫艾拉与北境军团，采集资源、训练士兵、建造箭塔，越过冰河摧毁寒霜要塞。
+The entire single-player battle runs on your device. There are no accounts, backend services, multiplayer, campaign saves, or packaged APK/IPA builds. This is an original game inspired by classic fantasy RTS games; it does not contain Blizzard code, maps, characters, art, audio, or Warcraft campaign files.
 
-采用 **Three.js + TypeScript + React + PWA**，以手机浏览器为主要入口。所有战斗都在本机运行，无账号、无后端、无付费服务。
+## Touch Edition
 
-**这不是《魔兽争霸 III：冰封王座》的移植版。** 不包含 Blizzard 的代码、地图、角色、美术或音频，也不运行 Warcraft 的原版战役文件。原创角色、场景和玩法旨在呈现经典 RTS 的操作感。
+The touch edition is being developed separately from the published Web release. It adds larger thumb controls, a collapsible map, separate portrait and landscape layouts, screen-space unit selection, and independent tap/drag/pinch handling.
 
-## 试玩
+Camp, help, and target selection pause the battle while you plan. Blizzard and tower placement show a preview before confirmation; previewing or canceling costs no resources. Training resumes when camp closes. Touch devices also use reduced pixel density, shadow resolution, and snowfall.
 
-[打开已部署的试玩版](https://frostmarch-cola.black-egret-5400.chatgpt.site) — Sites 试玩入口当前仅项目所有者可访问；开源源码公开，任何人都可本地运行或自行托管静态产物。
+The original Web release remains available in [Releases](https://github.com/cola-runner/frostmarch/releases). This touch edition is still a browser game, not a native APK or IPA.
 
-- 手机横屏更适合观察战场，竖屏也有独立布局。
-- 支持 WebGL 2 的现代浏览器；建议开启硬件加速。
-- 浏览器菜单 → 添加到主屏幕，可按 PWA 启动。资源完成缓存后可离线重开战役。
-- 当前是单人 demo，没有联机、账号、战役存档或已打包的 APK / IPA。
+## Controls
 
-## Touch Edition · 手机适配
+| Action                          | Mouse / Touch                          | Keyboard |
+| ------------------------------- | -------------------------------------- | -------- |
+| Select hero                     | Hero button or tap the hero            | `1`      |
+| Select army                     | Army button                            | `A`      |
+| Move and engage                 | Select troops, then click the ground   | —        |
+| Pan / Zoom                      | Drag / Pinch or scroll                 | —        |
+| Rotate camera                   | Rotate button                          | —        |
+| Frost Nova                      | Ability button                         | `Q`      |
+| Blizzard                        | Ability button, then target the ground | `W`      |
+| Train a guard                   | Train Guard button                     | `R`      |
+| Pause / Resume                  | Pause button                           | `Space`  |
+| Cancel targeting / Close panels | Cancel or close button                 | `Esc`    |
 
-- 主要触控按钮至少 44px，指令集中在拇指附近；地图可收起，横竖屏分别布局。
-- 按屏幕像素计算单位点击容错，缩放不会缩小有效选取面积；拖动、双指缩放和点击独立识别。
-- 暴风雪与箭塔先展示世界坐标范围，再确认提交；无效位置会显示原因。预览和取消均不消耗资源。
-- 打开营地、操作指南或瞄准时进入战术暂停；营地允许排队招募，返回战场后继续训练和战斗。
-- 镜头中心避开底部操作区，触屏设备使用较低的像素倍率、阴影分辨率和落雪数量。
+Use a modern browser with WebGL 2 and hardware acceleration. On mobile, landscape offers a wider view. Add the game to your home screen from the browser menu for a standalone PWA experience. After the same-origin resources are cached, the campaign can be reopened offline; device installation and offline behavior have not yet been verified on real iOS or Android hardware.
 
-Web 原版保留在 [v0.1.0](https://github.com/cola-runner/frostmarch/releases/tag/v0.1.0)。本轮手游适配仍是浏览器游戏，并非 APK / IPA 原生安装包。
+## Run locally
 
-## 已实现
-
-- 可平移、缩放、旋转的 3D 冰雪沙盘；雪松森林、矿洞、堡垒、冰河与桥梁。
-- 实时战斗、单位自动索敌、编队移动、单位分离与建筑避让。
-- 英雄、卫兵、远程射手、工人及敌方突袭者。
-- 工人往返采矿伐木、资源消耗、训练队列、人口上限。
-- 箭塔放置校验、建造时间和自动防御。
-- **凛冬之环**：英雄周围伤害与减速；**暴风雪**：定点持续范围伤害。
-- 敌军分波推进，双方要塞生命，英雄保护目标，胜败结算与重新开始。
-- 小地图、触屏指挥、双指缩放、键盘快捷键、暂停、合成音效。
-- PWA manifest、同源静态资源缓存，以及可选的 WebMCP 指挥接口。
-
-## 操作
-
-| 操作                | 手机 / 鼠标            | 键盘    |
-| ------------------- | ---------------------- | ------- |
-| 选择英雄            | 点英雄或“英雄”         | `1`     |
-| 选择军队            | 点“全军”               | `A`     |
-| 移动 / 自动交战     | 选中单位后点地面       | —       |
-| 平移 / 缩放         | 拖动 / 双指或滚轮      | —       |
-| 旋转                | 右侧旋转按钮           | —       |
-| 凛冬之环            | 点击技能按钮           | `Q`     |
-| 暴风雪              | 点击技能，再点目标位置 | `W`     |
-| 招募卫兵            | 底部招募按钮           | `R`     |
-| 工人、射手、箭塔    | 打开“营地与招募”       | —       |
-| 暂停 / 继续         | 顶部暂停按钮           | `Space` |
-| 取消施法 / 关闭面板 | 取消或关闭按钮         | `Esc`   |
-
-工人默认自动采集。法力自动恢复；英雄脱离附近敌军后缓慢回复生命。战役目标是摧毁敌方要塞，同时保住英雄和己方要塞。
-
-## 本地启动
-
-需要 Node.js **22.18+**（推荐 Node 24）和 npm。
+Requires Node.js **22.18+**; Node 24 is recommended.
 
 ```bash
 git clone https://github.com/cola-runner/frostmarch.git
 cd frostmarch
 npm ci
-npm run dev
+npm run dev -- --host 0.0.0.0
 ```
 
-访问终端显示的地址。手机连接同一 Wi-Fi 后，访问终端显示的局域网地址。
+Open the URL printed in the terminal. A phone on the same Wi-Fi can use the displayed network address.
 
 ```bash
 npm run typecheck
+npm run lint
 npm test
 npm run build
 ```
 
-`npm run build` 导出纯静态网站至 **`dist/client/`**。可使用任意 HTTPS 静态托管服务部署该目录。当前路由和资源路径面向站点根目录；部署到子目录时需要相应配置 base path。开发模式不注册 Service Worker。
+The production build is a static site in **`dist/client/`**. Deploy that directory to an HTTPS static host. Routes and assets assume a domain root; subdirectory hosting requires base-path configuration. Development on localhost does not register a service worker.
 
-如果 macOS 的系统 libvips / Homebrew 检查卡住，可使用 sharp 官方支持的环境变量：
+If sharp installation stalls while detecting a system libvips installation on macOS, use its supported override:
 
 ```bash
 SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm ci
 ```
 
-## 为什么选这个平台
+## Architecture
 
-这是为“小而惊艳、立即在手机试玩”的目标做的选择：
+| Path                 | Responsibility                                                  |
+| -------------------- | --------------------------------------------------------------- |
+| `game/simulation.ts` | Independent battle, economy, recruitment, AI, and victory rules |
+| `game/scene.ts`      | Three.js terrain, units, buildings, camera, input, and effects  |
+| `game/audio.ts`      | Original synthesized Web Audio cues                             |
+| `game/webmcp.ts`     | Optional structured battle-state and army-command tools         |
+| `app/page.tsx`       | React game HUD, controls, tutorial, and results                 |
+| `app/globals.css`    | Desktop and responsive game layout                              |
+| `public/`            | Original hero portrait, icons, and PWA resources                |
+| `tests/`             | Simulation and interface-contract checks                        |
 
-- [Three.js](https://threejs.org/manual/en/fundamentals.html)：直接渲染真正可交互的 3D 战场，几何与材质完全可控。
-- [响应式 WebGL](https://threejs.org/manual/en/responsive.html)：适配不同画幅，并限制像素倍率、复用几何和实例化森林。
-- **PWA**：免下载安装包，方便以链接交付 demo。
-- [Capacitor](https://capacitorjs.com/docs)：后续需要原生安装包时可以封装现有 Web 应用；本仓库暂未配置原生工程，也未验证原生打包。
+The renderer advances the simulation each frame and sends UI snapshots every 100 ms. Background tabs stop advancing the battle. Trees use instancing, geometry is shared, and pixel density is capped. Movement uses formations, soft unit separation, and simple building avoidance, rather than a full navigation-mesh pathfinder.
 
-若扩展成大量单位、复杂寻路、完整战役或商业级联网 RTS，再评估专门游戏引擎和服务器。当前优先把可玩的最小战役打磨完整。
+Three.js gives this small demo a directly playable 3D battlefield with a lightweight distribution path. PWA support makes it easy to launch from a link. A future Capacitor wrapper could package the web app; no native project is configured or validated here.
 
-## 项目结构
+## Validation
 
-```text
-app/page.tsx          React 游戏 HUD、触控操作与结果界面
-app/globals.css       手机竖屏 / 横屏 / 桌面游戏界面
-game/simulation.ts   独立且可测试的战斗与经济规则
-game/scene.ts        Three.js 场景、角色、相机、输入和特效
-game/audio.ts        原创 Web Audio 合成音效
-game/webmcp.ts       渐进增强的结构化读状态 / 指挥接口
-tests/               无浏览器依赖的规则与战役验证
-public/              英雄图像、图标与 PWA 文件
-```
+TypeScript, lint for project-owned code, the static production build, and automated battle/WebMCP checks are part of the validation workflow. Tests cover resource delivery, orders, recruitment, spells, construction, waves, pause/reset behavior, and a complete winning campaign without cheats. No specific device frame rate is promised.
 
-渲染器使用独立规则层；界面每 100ms 接收快照，渲染循环按帧更新。切到后台时停止推进模拟，避免回到游戏时发现战役已结束。场景按需载入；森林使用实例化绘制，像素倍率限制为 1.6，支持减少动态效果偏好。
+WebMCP is optional. Unsupported browsers continue to play normally, and registration failures do not block the game. The read-state and army-command tools have been exercised in a supporting browser, including invalid-coordinate and inactive-battle rejection.
 
-## 验证范围
+## Contributing and license
 
-已检查 TypeScript、自有源码 lint、静态生产构建，以及 21 项自动化测试（经济、指令、训练、技能、建造、波次、暂停、重开和完整胜利流程）。已在浏览器中检查手机横竖屏、营地暂停、招募和技能确认流程。**尚未做 iOS / Android 真机帧率、离线安装流程或无障碍辅助技术验证。** 不承诺具体设备帧率。
+Contributions to campaign balance, touch controls, performance, pathfinding, and original units are welcome. Run the checks above before submitting a change.
 
-WebMCP 是可选的浏览器提案：浏览器不支持时照常游戏；注册失败不会阻止游戏。已在支持该接口的浏览器中验证读状态、有效指挥、越界拒绝与非活动战役拒绝。
-
-## 贡献与许可
-
-欢迎改进战役平衡、触屏操作、性能、寻路和原创单位。提交前运行 `npm run typecheck && npm run lint && npm test && npm run build`。
-
-代码与本项目原创资源采用 [MIT](LICENSE)。英雄肖像为本项目生成的原创图像；3D 模型在代码中程序化构建；音效实时合成。第三方依赖保留各自许可证，参见 [CREDITS.md](CREDITS.md)。
+Code and original project assets are available under the [MIT license](LICENSE). The hero portrait was generated for this project, 3D geometry is created in code, and audio is synthesized. Dependencies retain their own licenses. See [CREDITS.md](CREDITS.md).

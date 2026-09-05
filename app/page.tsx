@@ -164,10 +164,16 @@ export default function Home() {
           setReady(true);
           unregister = registerGameTools(battle, refresh);
         } catch (e) {
-          setError(e instanceof Error ? e.message : '无法初始化 3D 战场');
+          setError(
+            e instanceof Error
+              ? e.message
+              : 'Could not initialize the 3D battlefield',
+          );
         }
       })
-      .catch(() => setError('战场加载失败，请刷新重试。'));
+      .catch(() =>
+        setError('The battlefield failed to load. Refresh to try again.'),
+      );
     if ('serviceWorker' in navigator && location.hostname !== 'localhost')
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     return () => {
@@ -264,11 +270,12 @@ export default function Home() {
         await document.documentElement.requestFullscreen();
       else {
         battleRef.current!.notice =
-          '可在浏览器菜单中添加到主屏幕，获得全屏体验。';
+          'Add to Home Screen from your browser menu for a fullscreen experience.';
         refresh();
       }
     } catch {
-      battleRef.current!.notice = '可通过浏览器菜单添加到主屏幕。';
+      battleRef.current!.notice =
+        'Choose Add to Home Screen in your browser menu.';
       refresh();
     }
   };
@@ -289,26 +296,26 @@ export default function Home() {
         className="battlefield"
         ref={mount}
         role="application"
-        aria-label="3D 战场。点选友军，点击地面移动；拖动平移，双指缩放。技能需点选位置后确认。"
+        aria-label="3D battlefield. Select allies and tap the ground to move. Drag to pan and pinch to zoom. Choose a spell target, then confirm."
       />
       <div className="vignette" />
       <header className="topbar">
         <div className="wordmark">
           <Snowflake />
           <span>
-            FROSTMARCH<small>霜 境 远 征</small>
+            FROSTMARCH<small>THE NORTHERN FRONT</small>
           </span>
         </div>
-        <div className="resources" aria-label="资源">
-          <span title="金币">
+        <div className="resources" aria-label="Resources">
+          <span title="Gold">
             <Coins />
             <b>{state.gold}</b>
           </span>
-          <span title="木材">
+          <span title="Wood">
             <TreePine />
             <b>{state.wood}</b>
           </span>
-          <span title="人口，上限 30">
+          <span title="Population, maximum 30">
             <Users />
             <b>
               {state.population}
@@ -320,14 +327,14 @@ export default function Home() {
           <button
             className="icon-button help-toggle"
             onClick={() => openHelp(true)}
-            aria-label="操作指南"
+            aria-label="Controls"
           >
             <CircleHelp />
           </button>
           <button
             className="icon-button"
             onClick={toggleSound}
-            aria-label={sound ? '关闭声音' : '开启声音'}
+            aria-label={sound ? 'Mute sound' : 'Enable sound'}
             aria-pressed={sound}
           >
             {sound ? <Volume2 /> : <VolumeX />}
@@ -335,7 +342,7 @@ export default function Home() {
           <button
             className="icon-button fullscreen"
             onClick={fullscreen}
-            aria-label="切换全屏"
+            aria-label="Toggle fullscreen"
           >
             <Maximize />
           </button>
@@ -346,28 +353,28 @@ export default function Home() {
               battleRef.current?.pause();
               refresh();
             }}
-            aria-label={state.phase === 'paused' ? '继续游戏' : '暂停游戏'}
+            aria-label={state.phase === 'paused' ? 'Resume game' : 'Pause game'}
           >
             {state.phase === 'paused' ? <Play /> : <Pause />}
           </button>
         </div>
       </header>
       <aside className="mission">
-        <span className="eyebrow">CHAPTER I · 北境战役</span>
-        <h2>守住最后的黎明</h2>
+        <span className="eyebrow">CHAPTER I · THE NORTHERN FRONT</span>
+        <h2>Hold the Last Dawn</h2>
         <p>
-          <Flag size={14} /> 摧毁寒霜要塞
+          <Flag size={14} /> Destroy Frostkeep
         </p>
         <Progress
           className="objective-health"
           value={state.enemyHp / 18}
-          aria-label="敌方要塞生命"
+          aria-label="Enemy keep health"
         />
         <div className="battle-meta">
           <span className="live-dot" />{' '}
           {state.phase === 'ready'
-            ? '黎明前夕'
-            : `第 ${state.wave} 波 · ${state.nextWave}s 后来袭`}
+            ? 'Before the dawn'
+            : `Wave ${state.wave} · Next in ${state.nextWave}s`}
           <span>{clock(state.time)}</span>
         </div>
       </aside>
@@ -375,21 +382,21 @@ export default function Home() {
         <button
           className="icon-button"
           onClick={() => sceneRef.current?.rotate()}
-          aria-label="旋转视角"
+          aria-label="Rotate camera"
         >
           <RotateCcw />
         </button>
         <button
           className="icon-button"
           onClick={() => sceneRef.current?.zoom(-1)}
-          aria-label="放大战场"
+          aria-label="Zoom in"
         >
           <Plus />
         </button>
         <button
           className="icon-button"
           onClick={() => sceneRef.current?.zoom(1)}
-          aria-label="缩小战场"
+          aria-label="Zoom out"
         >
           <Minus />
         </button>
@@ -398,7 +405,7 @@ export default function Home() {
           onClick={() =>
             sceneRef.current?.focus(battleRef.current?.hero ?? { x: 0, z: 0 })
           }
-          aria-label="定位英雄"
+          aria-label="Focus hero"
         >
           <Crosshair />
         </button>
@@ -407,14 +414,13 @@ export default function Home() {
         <section className="prologue">
           <span className="eyebrow">THE NORTHERN FRONT</span>
           <h1>
-            寒冬已至。
+            Winter has come.
             <br />
-            王国，由你守护。
+            Hold the North.
           </h1>
           <p>
-            越过封冻的河流，
-            <br className="mobile-break" />
-            带领北境军团夺回黎明。
+            Cross the frozen river. <br className="mobile-break" />
+            Lead your legion. Reclaim the dawn.
           </p>
           <button
             className="begin"
@@ -422,12 +428,12 @@ export default function Home() {
             disabled={!ready || !!error}
           >
             <Swords />
-            {ready ? '开始远征' : '正在展开战场…'}
+            {ready ? 'Begin Campaign' : 'Preparing battlefield…'}
             <span>→</span>
           </button>
-          <small>单人战役 · 触控指挥 · 约 3 分钟</small>
+          <small>Single player · A short RTS campaign</small>
           <button className="how-to" onClick={() => openHelp(true)}>
-            <CircleHelp size={14} /> 如何指挥
+            <CircleHelp size={14} /> How to Play
           </button>
         </section>
       )}
@@ -437,20 +443,20 @@ export default function Home() {
             className="map-toggle"
             onClick={() => setMapOpen(!mapOpen)}
             aria-expanded={mapOpen}
-            aria-label={mapOpen ? '收起战场地图' : '展开战场地图'}
+            aria-label={mapOpen ? 'Collapse battle map' : 'Expand battle map'}
           >
             <Map />
-            <span>{mapOpen ? '收起地图' : '战场地图'}</span>
+            <span>{mapOpen ? 'Hide Map' : 'Battle Map'}</span>
           </button>
           <div className="minimap-wrap">
             <div className="minimap-head">
               <Compass size={13} />
-              <span>霜落隘口</span>
+              <span>Frostfall Pass</span>
               <span>N ↑</span>
             </div>
             <button
               className="minimap-button"
-              aria-label="战场地图，点击位置移动视角；键盘激活回到地图中心"
+              aria-label="Battle map. Click to move the camera; keyboard activation centers the map."
               onClick={(e) => {
                 if (e.detail === 0) {
                   sceneRef.current?.focus({ x: 0, z: 0 });
@@ -514,41 +520,43 @@ export default function Home() {
                 <circle cx={GROVE.x} cy={GROVE.z} r="1.5" fill="#91b9a0" />
               </svg>
             </button>
-            <span className="minimap-caption">点击地图查看战场</span>
+            <span className="minimap-caption">
+              Click the map to look around
+            </span>
           </div>
-          <div className="squad-select" aria-label="选择部队">
+          <div className="squad-select" aria-label="Select troops">
             <button
               className={group === 'hero' ? 'selected' : ''}
               onClick={() => select('hero')}
             >
               <Crown />
-              英雄<kbd>1</kbd>
+              Hero<kbd>1</kbd>
             </button>
             <button
               className={group === 'army' ? 'selected' : ''}
               onClick={() => select('army')}
             >
               <Swords />
-              全军<kbd>A</kbd>
+              Army<kbd>A</kbd>
             </button>
             <button
               className={group === 'workers' ? 'selected' : ''}
               onClick={() => select('workers')}
             >
               <Pickaxe />
-              工人
+              Workers
             </button>
           </div>
           <output className={`hint ${mode !== 'order' ? 'target-hint' : ''}`}>
             {mode === 'tower'
-              ? '战术暂停 · 点击南岸空地预览位置'
+              ? 'Planning · Tap clear ground south of the river'
               : mode === 'blizzard'
-                ? '战术暂停 · 点击战场预览技能范围'
+                ? 'Planning · Tap the battlefield to aim'
                 : state.notice}
             {mode !== 'order' && (
               <button
                 onClick={() => chooseMode('order')}
-                aria-label="取消施法或建造"
+                aria-label="Cancel spell or construction"
               >
                 <X size={16} />
               </button>
@@ -560,16 +568,22 @@ export default function Home() {
             aria-expanded={camp}
           >
             <Tent />
-            营地与招募{state.queue.length > 0 && <b>{state.queue.length}</b>}
+            Camp & Recruit
+            {state.queue.length > 0 && <b>{state.queue.length}</b>}
             <ChevronRight />
           </button>
         </>
       )}
       {aim && mode !== 'order' && (
-        <section className="target-confirm" aria-label="确认技能或建筑落点">
+        <section
+          className="target-confirm"
+          aria-label="Confirm spell or building target"
+        >
           <p>
             {aim.error ??
-              (mode === 'tower' ? '位置可建造' : '范围内的敌人将受到持续伤害')}
+              (mode === 'tower'
+                ? 'Ready to build here'
+                : 'Enemies in this area take damage over time')}
           </p>
           <div>
             <button
@@ -578,12 +592,12 @@ export default function Home() {
               onClick={confirmTarget}
             >
               <Check />
-              {mode === 'tower' ? '确认建造' : '释放暴风雪'}
+              {mode === 'tower' ? 'Build Here' : 'Cast Blizzard'}
             </button>
             <button
               className="cancel-placement"
               onClick={() => chooseMode('order')}
-              aria-label="取消落点"
+              aria-label="Cancel target"
             >
               <X />
             </button>
@@ -598,15 +612,15 @@ export default function Home() {
         >
           <div className="panel-title">
             <span>
-              <Tent /> <SheetTitle>北境营地</SheetTitle>
+              <Tent /> <SheetTitle>Northern Camp</SheetTitle>
             </span>
-            <button onClick={() => openCamp(false)} aria-label="关闭营地">
+            <button onClick={() => openCamp(false)} aria-label="Close camp">
               <X />
             </button>
           </div>
           <SheetDescription className="planning-note">
             <Pause />
-            战术暂停 · 关闭营地后继续战斗
+            Planning · Close camp to resume battle
           </SheetDescription>
           <div className="camp-wallet">
             <span>
@@ -622,25 +636,25 @@ export default function Home() {
               {state.population}/30
             </span>
           </div>
-          <span className="section-label">招募军队</span>
+          <span className="section-label">Recruit Troops</span>
           {(
             [
               {
                 kind: 'guard',
-                name: '霜盾卫兵',
-                desc: '近战 · 坚守前线',
+                name: 'Frostguard',
+                desc: 'Melee · Hold the line',
                 icon: Shield,
               },
               {
                 kind: 'ranger',
-                name: '游林射手',
-                desc: '远程 · 后排输出',
+                name: 'Ranger',
+                desc: 'Ranged · Cover the front',
                 icon: BowArrow,
               },
               {
                 kind: 'worker',
-                name: '北境工人',
-                desc: '采集 · 自动往返',
+                name: 'Worker',
+                desc: 'Gatherer · Works automatically',
                 icon: Pickaxe,
               },
             ] as const
@@ -678,19 +692,19 @@ export default function Home() {
           <div className="training-queue">
             {state.queue.length ? (
               <>
-                <span>训练中 · {Math.ceil(state.queue[0].remaining)}s</span>
+                <span>Training · {Math.ceil(state.queue[0].remaining)}s</span>
                 <Progress
                   className="queue-progress"
                   value={((4 - state.queue[0].remaining) / 4) * 100}
-                  aria-label="训练进度"
+                  aria-label="Training progress"
                 />
-                <small>队列 {state.queue.length} / 5</small>
+                <small>Queue {state.queue.length} / 5</small>
               </>
             ) : (
-              <span>训练队列空闲</span>
+              <span>Training queue idle</span>
             )}
           </div>
-          <span className="section-label">资源与防御</span>
+          <span className="section-label">Resources & Defense</span>
           <div className="economy-actions">
             <button
               disabled={!active}
@@ -700,7 +714,7 @@ export default function Home() {
               }}
             >
               <Pickaxe />
-              采集金币
+              Mine Gold
             </button>
             <button
               disabled={!active}
@@ -710,7 +724,7 @@ export default function Home() {
               }}
             >
               <TreePine />
-              采集木材
+              Gather Wood
             </button>
           </div>
           <button
@@ -723,7 +737,7 @@ export default function Home() {
           >
             <Hammer />
             <span>
-              建造箭塔<small>100 金币 · 90 木材</small>
+              Build Tower<small>100 gold · 90 wood</small>
             </span>
             <Plus />
           </button>
@@ -736,39 +750,39 @@ export default function Home() {
             select('hero');
             sceneRef.current?.focus(battleRef.current?.hero ?? { x: -5, z: 9 });
           }}
-          aria-label="选择并定位英雄艾拉"
+          aria-label="Select and focus Ayla"
         >
           <Image
             width={640}
             height={640}
             unoptimized
             src="/hero.webp"
-            alt="艾拉，银发霜誓守卫"
+            alt="Ayla, the silver-haired Frostsworn Warden"
           />
           <span>01</span>
         </button>
         <div className="hero-info">
-          <span className="eyebrow">霜誓守卫</span>
-          <strong>艾拉 · 霜刃</strong>
+          <span className="eyebrow">Frostsworn Warden</span>
+          <strong>Ayla Frostblade</strong>
           <Progress
             className="health hero-health"
             value={state.hp / 6}
-            aria-label="英雄生命"
+            aria-label="Hero health"
           />
           <Progress
             className="health mana"
             value={state.mana}
-            aria-label="英雄法力"
+            aria-label="Hero mana"
           />
           <small>
-            {state.hp} 生命 <span>{state.mana} 法力</span>
+            {state.hp} HP <span>{state.mana} Mana</span>
           </small>
         </div>
         <div className="command-spacer" />
         <div className="selection-count">
           <Users />
           <b>{state.selected}</b>
-          <small>已选单位</small>
+          <small>Selected</small>
         </div>
         <button
           className="action"
@@ -783,17 +797,17 @@ export default function Home() {
           }}
         >
           <Swords />
-          <span>全军集合</span>
+          <span>Rally Army</span>
           <kbd>A</kbd>
         </button>
         <button
           className="action frost"
           disabled={!active || state.nova > 0 || state.mana < 30}
           onClick={nova}
-          title="英雄周围 11 米造成伤害并减速，消耗 30 法力"
+          title="Damage and slow enemies within 11 m of your hero. Costs 30 mana."
         >
           <Snowflake />
-          <span>{state.nova ? `${state.nova}s` : '凛冬之环'}</span>
+          <span>{state.nova ? `${state.nova}s` : 'Frost Nova'}</span>
           <kbd>Q</kbd>
           <i>30</i>
         </button>
@@ -801,10 +815,10 @@ export default function Home() {
           className={`action blizzard ${mode === 'blizzard' ? 'selected' : ''}`}
           disabled={!active || state.blizzard > 0 || state.mana < 55}
           onClick={() => chooseMode(mode === 'blizzard' ? 'order' : 'blizzard')}
-          title="选择位置，持续轰击 4 秒，消耗 55 法力"
+          title="Target an area for 4 seconds of ice damage. Costs 55 mana."
         >
           <CloudSnow />
-          <span>{state.blizzard ? `${state.blizzard}s` : '暴风雪'}</span>
+          <span>{state.blizzard ? `${state.blizzard}s` : 'Blizzard'}</span>
           <kbd>W</kbd>
           <i>55</i>
         </button>
@@ -819,7 +833,7 @@ export default function Home() {
           onClick={() => recruit('guard')}
         >
           <Shield />
-          <span>招募卫兵</span>
+          <span>Train Guard</span>
           <kbd>R</kbd>
           <i>70</i>
         </button>
@@ -830,8 +844,8 @@ export default function Home() {
           <section className="result-panel">
             <span className="eyebrow">THE WORLD CAN WAIT</span>
             <Pause size={34} />
-            <h2>战场已暂停</h2>
-            <p>风雪暂歇，等待你的号令。</p>
+            <h2>Battle Paused</h2>
+            <p>The storm waits for your command.</p>
             <button
               className="begin"
               onClick={() => {
@@ -840,10 +854,10 @@ export default function Home() {
               }}
             >
               <Play />
-              继续远征
+              Resume Campaign
             </button>
             <button className="text-button" onClick={() => openHelp(true)}>
-              查看操作指南
+              View Controls
             </button>
           </section>
         </div>
@@ -862,23 +876,25 @@ export default function Home() {
               <Flag className="result-symbol" />
             )}
             <h2>
-              {state.phase === 'won' ? '黎明，属于北境。' : '北境，等待归来。'}
+              {state.phase === 'won'
+                ? 'The dawn is ours.'
+                : 'The North awaits your return.'}
             </h2>
             <p>{state.notice}</p>
             <div className="result-stats">
               <span>
-                <b>{clock(state.time)}</b>战役用时
+                <b>{clock(state.time)}</b>Battle Time
               </span>
               <span>
-                <b>{state.kills}</b>击败敌军
+                <b>{state.kills}</b>Enemies Defeated
               </span>
               <span>
-                <b>{state.wave}</b>迎战波次
+                <b>{state.wave}</b>Waves Faced
               </span>
             </div>
             <button className="begin" onClick={start}>
               <RotateCcw />
-              再次远征
+              Play Again
             </button>
           </section>
         </div>
@@ -888,38 +904,43 @@ export default function Home() {
           <button
             className="close-help icon-button"
             onClick={() => openHelp(false)}
-            aria-label="关闭操作指南"
+            aria-label="Close controls"
           >
             <X />
           </button>
           <span className="eyebrow">COMMANDER&apos;S FIELD GUIDE</span>
-          <DialogTitle>你的第一场北境战役</DialogTitle>
+          <DialogTitle>Your First Northern Campaign</DialogTitle>
           <ol>
             <li>
-              <b>点选部队，下达命令</b>
-              <p>点击英雄或“全军”，再点地面前进。士兵会自动攻击附近敌人。</p>
-            </li>
-            <li>
-              <b>经营营地，补充兵力</b>
+              <b>Select troops. Give an order.</b>
               <p>
-                工人自动往返采集。打开营地时战斗暂停，可安心招募、切换采集资源或选择建造箭塔。
+                Select your hero or Army, then click the ground to move. Troops
+                attack nearby enemies automatically.
               </p>
             </li>
             <li>
-              <b>让寒冬为你而战</b>
+              <b>Build your force.</b>
               <p>
-                靠近敌军释放凛冬之环；选择暴风雪后点选目标区域，确认再释放。保护英雄，摧毁北岸要塞。
+                Workers gather resources automatically. Opening Camp pauses the
+                battle so you can recruit, assign resources, or plan a tower.
+              </p>
+            </li>
+            <li>
+              <b>Make winter your weapon.</b>
+              <p>
+                Cast Frost Nova near enemies. Select Blizzard, tap a target
+                area, then confirm. Protect your hero and destroy Frostkeep.
               </p>
             </li>
           </ol>
           <div className="control-notes">
-            <span>拖动 · 平移视角</span>
-            <span>双指 / 滚轮 · 缩放</span>
-            <span>空格 · 暂停</span>
-            <span>Q / W · 英雄技能</span>
+            <span>Drag · Pan camera</span>
+            <span>Pinch / Scroll · Zoom</span>
+            <span>Space · Pause</span>
+            <span>Q / W · Hero abilities</span>
           </div>
           <button className="begin" onClick={() => openHelp(false)}>
-            准备就绪
+            Ready to Command
             <ChevronRight />
           </button>
         </DialogContent>
@@ -927,11 +948,14 @@ export default function Home() {
       {error && (
         <div className="overlay">
           <section className="result-panel">
-            <h2>战场暂时无法展开</h2>
-            <p>请使用支持 WebGL 2 的浏览器，并开启硬件加速。</p>
+            <h2>Battlefield Unavailable</h2>
+            <p>
+              Use a browser with WebGL 2 support and enable hardware
+              acceleration.
+            </p>
             <small>{error.slice(0, 180)}</small>
             <button className="begin" onClick={() => location.reload()}>
-              重新加载
+              Reload
             </button>
           </section>
         </div>
