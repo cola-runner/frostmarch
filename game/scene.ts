@@ -32,7 +32,7 @@ export function createScene(
   const mobileGPU = matchMedia('(pointer: coarse)').matches;
   renderer.setPixelRatio(Math.min(devicePixelRatio, mobileGPU ? 1.35 : 1.6));
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = T.PCFSoftShadowMap;
+  renderer.shadowMap.type = T.PCFShadowMap;
   renderer.outputColorSpace = T.SRGBColorSpace;
   renderer.toneMapping = T.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.15;

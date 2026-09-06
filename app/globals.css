@@ -3061,3 +3061,84 @@ button:active:not(:disabled) {
 .is-prologue .mission .battle-meta {
   visibility: hidden;
 }
+
+/* Compact English commands keep the battlefield open on phones. */
+.install-card {
+  margin: 18px 0 6px;
+  padding: 16px;
+  border: 1px solid #839d9d55;
+  background: #102731;
+  color: #d9e5e5;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.install-card strong {
+  color: #e8d5a7;
+  font-size: 16px;
+}
+.install-card p {
+  margin: 8px 0;
+}
+.install-card button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  margin: 12px 0;
+  border: 1px solid #ceb17a;
+  background: #d9c294;
+  color: #172c36;
+  font-size: 15px;
+}
+.offline-ready {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: #b7d7bd;
+  margin-top: 10px;
+}
+@media (max-width: 700px) and (min-height: 521px) {
+  .squad-select button:last-child svg {
+    display: none;
+  }
+  .hero-info strong {
+    font-size: 13px;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+  .wordmark small {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+  }
+  .mission .eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.05em;
+  }
+  .mission h2 {
+    font-size: 18px;
+    letter-spacing: 0;
+  }
+  .camp-toggle {
+    font-size: 14px;
+  }
+}
+@media (max-height: 520px) {
+  .hero-info .eyebrow {
+    display: none;
+  }
+  .hero-info strong {
+    font-size: 12px;
+    letter-spacing: 0;
+  }
+  .command-bar .action span {
+    font-size: 11px;
+  }
+  .prologue h1 {
+    line-height: 1.25;
+  }
+  .prologue p {
+    line-height: 1.5;
+  }
+}

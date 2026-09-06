@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 export const metadata: Metadata = {
-  title: 'Frostmarch · The Northern Front',
+  title: 'Frostmarch · Touch Edition',
   description:
-    'Command the northern legions in an original 3D fantasy RTS. Gather, recruit, and reclaim Frostkeep.',
+    'A 3D fantasy RTS for your phone. Tap to command your army, unleash frost magic, and reclaim the North. Play instantly in your browser.',
   manifest: '/manifest.webmanifest',
   icons: { icon: '/favicon.svg', apple: '/icon-192.png' },
   appleWebApp: {

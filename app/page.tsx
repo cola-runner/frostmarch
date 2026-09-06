@@ -1,5 +1,11 @@
 'use client';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import {
   Snowflake,
   Swords,
@@ -29,6 +35,7 @@ import {
   CircleHelp,
   Check,
   Map,
+  Download,
 } from 'lucide-react';
 import Image from 'next/image';
 import { Progress } from '@/components/ui/progress';
@@ -53,11 +60,28 @@ import { BattleAudio } from '../game/audio';
 import { registerGameTools } from '../game/webmcp';
 const initial = new Battle().snapshot();
 type Mode = 'order' | 'tower' | 'blizzard';
+type InstallPrompt = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+};
+const standaloneDisplay = () =>
+  matchMedia('(display-mode: standalone)').matches ||
+  !!(navigator as Navigator & { standalone?: boolean }).standalone;
+function subscribeDisplay(change: () => void) {
+  const query = matchMedia('(display-mode: standalone)');
+  query.addEventListener('change', change);
+  return () => query.removeEventListener('change', change);
+}
 const clock = (n: number) =>
   `${Math.floor(n / 60)
     .toString()
     .padStart(2, '0')}:${(n % 60).toString().padStart(2, '0')}`;
 export default function Home() {
+  const standalone = useSyncExternalStore(
+    subscribeDisplay,
+    standaloneDisplay,
+    () => false,
+  );
   const mount = useRef<HTMLDivElement>(null),
     battleRef = useRef<Battle | null>(null),
     sceneRef = useRef<SceneController | null>(null),
@@ -75,7 +99,38 @@ export default function Home() {
     [aim, setAim] = useState<{ point: Point; error: string | null } | null>(
       null,
     ),
-    [mapOpen, setMapOpen] = useState(false);
+    [mapOpen, setMapOpen] = useState(false),
+    [installPrompt, setInstallPrompt] = useState<InstallPrompt | null>(null),
+    [installed, setInstalled] = useState(false),
+    [offlineReady, setOfflineReady] = useState(false);
+  useEffect(() => {
+    const available = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as InstallPrompt);
+    };
+    const complete = () => {
+      setInstalled(true);
+      setInstallPrompt(null);
+    };
+    window.addEventListener('beforeinstallprompt', available);
+    window.addEventListener('appinstalled', complete);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', available);
+      window.removeEventListener('appinstalled', complete);
+    };
+  }, []);
+  const install = async () => {
+    if (!installPrompt) return;
+    try {
+      await installPrompt.prompt();
+      const choice = await installPrompt.userChoice;
+      if (choice.outcome === 'accepted') setInstalled(true);
+    } catch {
+      // The field guide retains browser-specific manual installation steps.
+    } finally {
+      setInstallPrompt(null);
+    }
+  };
   const refresh = useCallback(() => {
     if (battleRef.current) {
       setState(battleRef.current.snapshot());
@@ -174,8 +229,14 @@ export default function Home() {
       .catch(() =>
         setError('The battlefield failed to load. Refresh to try again.'),
       );
-    if ('serviceWorker' in navigator && location.hostname !== 'localhost')
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production')
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then(() => navigator.serviceWorker.ready)
+        .then(() => {
+          if (!gone) setOfflineReady(true);
+        })
+        .catch(() => {});
     return () => {
       gone = true;
       unregister();
@@ -361,7 +422,9 @@ export default function Home() {
       </header>
       <aside className="mission">
         <span className="eyebrow">CHAPTER I · THE NORTHERN FRONT</span>
-        <h2>Hold the Last Dawn</h2>
+        <h2>
+          {state.phase === 'ready' ? 'Hold the Last Dawn' : 'Take Frostkeep'}
+        </h2>
         <p>
           <Flag size={14} /> Destroy Frostkeep
         </p>
@@ -431,7 +494,7 @@ export default function Home() {
             {ready ? 'Begin Campaign' : 'Preparing battlefield…'}
             <span>→</span>
           </button>
-          <small>Single player · A short RTS campaign</small>
+          <small>Touch to command · No account needed</small>
           <button className="how-to" onClick={() => openHelp(true)}>
             <CircleHelp size={14} /> How to Play
           </button>
@@ -568,7 +631,7 @@ export default function Home() {
             aria-expanded={camp}
           >
             <Tent />
-            Camp & Recruit
+            Camp
             {state.queue.length > 0 && <b>{state.queue.length}</b>}
             <ChevronRight />
           </button>
@@ -939,6 +1002,31 @@ export default function Home() {
             <span>Space · Pause</span>
             <span>Q / W · Hero abilities</span>
           </div>
+          <section className="install-card" aria-label="Play on your phone">
+            <strong>Take the North with you.</strong>
+            <p>
+              Turn your phone sideways for a wider view. Battles run locally on
+              your device.
+            </p>
+            {installed || standalone ? (
+              <span>Added to your home screen</span>
+            ) : installPrompt ? (
+              <button onClick={() => void install()}>
+                <Download size={18} /> Install Frostmarch
+              </button>
+            ) : (
+              <p>
+                On iPhone, open in Safari and choose Share → Add to Home Screen.
+                On Android, use Install app or Add to Home Screen in your
+                browser menu.
+              </p>
+            )}
+            {offlineReady && (
+              <span className="offline-ready">
+                <Check size={15} /> Campaign ready offline
+              </span>
+            )}
+          </section>
           <button className="begin" onClick={() => openHelp(false)}>
             Ready to Command
             <ChevronRight />
